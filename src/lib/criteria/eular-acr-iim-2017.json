@@ -41,5 +41,98 @@
     "narrative.gottron_papules": ["gottron_papules"],
     "narrative.gottron_sign": ["gottron_sign"],
     "narrative.dysphagia": ["dysphagia_dysmotility"]
-  }
+  },
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "2017 European League Against Rheumatism/American College of Rheumatology classification criteria for adult and juvenile idiopathic inflammatory myopathies and their major subgroups",
+      "authors": "Lundberg IE, Tjärnlund A, Bottai M, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2017,
+      "volume": "76",
+      "issue": "12",
+      "pages": "1955-1964",
+      "doi": "10.1136/annrheumdis-2017-211468",
+      "pmid": "29079590",
+      "why_it_matters": "The current reference classification. Replaces Bohan and Peter 1975. Introduces probability-scoring and subgroup classification (PM, DM, amyopathic DM, juvenile DM, IBM). Published jointly in Ann Rheum Dis and Arthritis Rheumatol."
+    },
+    {
+      "type": "landmark_review_nejm",
+      "title": "Inflammatory muscle diseases",
+      "authors": "Dalakas MC",
+      "journal": "N Engl J Med",
+      "year": 2015,
+      "volume": "372",
+      "issue": "18",
+      "pages": "1734-1747",
+      "doi": "10.1056/NEJMra1402225",
+      "pmid": "25923553",
+      "why_it_matters": "Definitive NEJM review of IIM by one of the field's architects. Covers PM, DM, necrotising autoimmune myositis, IBM, including histopathology, autoantibody classification, and treatment."
+    },
+    {
+      "type": "myositis_specific_antibodies",
+      "title": "Autoantibodies in myositis",
+      "authors": "McHugh NJ, Tansley SL",
+      "journal": "Nat Rev Rheumatol",
+      "year": 2018,
+      "volume": "14",
+      "issue": "5",
+      "pages": "290-302",
+      "doi": "10.1038/nrrheum.2018.56",
+      "why_it_matters": "Authoritative reference on myositis-specific (Jo-1, PL-7, PL-12, EJ, OJ, SRP, HMGCR, Mi-2, MDA5, TIF-1γ, NXP-2, SAE) and myositis-associated (Ro52, PM-Scl, U1-RNP, Ku) antibodies, their clinical phenotypes, and prognostic value.",
+      "verify_pending": true
+    },
+    {
+      "type": "anti_mda5_ild",
+      "title": "RNA helicase encoded by melanoma differentiation-associated gene 5 is a major autoantigen in patients with clinically amyopathic dermatomyositis: association with rapidly progressive interstitial lung disease",
+      "authors": "Sato S, Hoshino K, Satoh T, Fujita T, Kawakami Y, Fujita T, Kuwana M",
+      "journal": "Arthritis Rheum",
+      "year": 2009,
+      "volume": "60",
+      "issue": "7",
+      "pages": "2193-2200",
+      "doi": "10.1002/art.24621",
+      "pmid": "19565506",
+      "why_it_matters": "Originating paper identifying MDA5 (previously anti-CADM-140) as the autoantigen linked to rapidly progressive ILD in clinically amyopathic DM. Highly relevant for East Asian male patients with normal CK and interstitial lung findings."
+    },
+    {
+      "type": "cancer_associated_dm",
+      "title": "Most patients with cancer-associated dermatomyositis have antibodies to nuclear matrix protein NXP-2 or transcription intermediary factor 1γ",
+      "authors": "Fiorentino DF, Chung LS, Christopher-Stine L, et al.",
+      "journal": "Arthritis Rheum",
+      "year": 2013,
+      "volume": "65",
+      "issue": "11",
+      "pages": "2954-2962",
+      "doi": "10.1002/art.38093",
+      "why_it_matters": "TIF-1γ and NXP-2 positivity in adults carries a strong association with occult malignancy (up to 75% of TIF-1γ+ adult DM patients). Triggers cancer screening protocol.",
+      "verify_pending": true
+    },
+    {
+      "type": "management_guideline",
+      "title": "Inflammatory myopathies: Evaluation and management",
+      "authors": "Selva-O'Callaghan A, Pinal-Fernandez I, Trallero-Araguás E, Milisenda JC, Grau-Junyent JM, Mammen AL",
+      "journal": "Lancet Neurol",
+      "year": 2018,
+      "volume": "17",
+      "issue": "9",
+      "pages": "816-828",
+      "doi": "10.1016/S1474-4422(18)30254-0",
+      "why_it_matters": "Contemporary Lancet Neurology evaluation-and-management review covering diagnostic algorithms, muscle MRI, muscle biopsy indications, and tiered immunosuppression.",
+      "verify_pending": true
+    },
+    {
+      "type": "primer",
+      "title": "Idiopathic inflammatory myopathies",
+      "authors": "Lundberg IE, Fujimoto M, Vencovsky J, et al.",
+      "journal": "Nat Rev Dis Primers",
+      "year": 2021,
+      "volume": "7",
+      "issue": "1",
+      "pages": "86",
+      "doi": "10.1038/s41572-021-00321-x",
+      "why_it_matters": "Comprehensive Nature Primer covering epidemiology, mechanism, diagnosis, management, quality of life, and outlook across the IIM spectrum.",
+      "verify_pending": true
+    }
+  ]
 }

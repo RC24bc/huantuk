@@ -83,3 +83,6 @@ next-env.d.ts
 .idea/
 *.swp
 *~
+
+# verify script artefact (regenerated on every run)
+scripts/verify-references-report.json

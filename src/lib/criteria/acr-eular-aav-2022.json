@@ -1,0 +1,140 @@
+{
+  "id": "acr-eular-aav-2022",
+  "name": "2022 ACR/EULAR Classification Criteria for ANCA-Associated Vasculitis (GPA, MPA, EGPA)",
+  "classification_rule": "Three separate criteria sets, one per subtype. Each uses additive weighted scoring with subtype-specific cut-offs. Target population: patients diagnosed with small- or medium-vessel vasculitis.",
+  "target_population": [
+    "Patient with diagnosis of small- or medium-vessel vasculitis",
+    "Alternative diagnoses mimicking vasculitis excluded"
+  ],
+  "subtypes": {
+    "gpa_granulomatosis_with_polyangiitis": {
+      "cutoff_score_for_classification": 5,
+      "key_clinical_criteria": [
+        { "label": "Nasal blood/ulcers/crusts or sinonasal congestion", "points_range": "+3" },
+        { "label": "Cartilaginous involvement (ear, nose, trachea, larynx)", "points_range": "+2" },
+        { "label": "Conductive or sensorineural hearing loss", "points_range": "+1" }
+      ],
+      "key_laboratory_criteria": [
+        { "label": "PR3-ANCA positive", "points_range": "+5" },
+        { "label": "MPO-ANCA positive", "points_range": "-1" },
+        { "label": "Eosinophilia ≥1×10^9/L", "points_range": "-4" }
+      ],
+      "key_imaging_criteria": [
+        { "label": "Pulmonary nodules, mass, or cavitation on chest imaging", "points_range": "+2" },
+        { "label": "Granuloma or giant cells on biopsy", "points_range": "+2" },
+        { "label": "Inflammation/consolidation/effusion of sinuses, mastoid, middle ear", "points_range": "+1" },
+        { "label": "Pauci-immune GN on renal biopsy", "points_range": "+1" }
+      ]
+    },
+    "mpa_microscopic_polyangiitis": {
+      "cutoff_score_for_classification": 5,
+      "key_criteria": [
+        { "label": "MPO-ANCA positive", "points_range": "+6" },
+        { "label": "Pulmonary fibrosis or interstitial lung disease", "points_range": "+3" },
+        { "label": "Pauci-immune GN on renal biopsy", "points_range": "+3" },
+        { "label": "PR3-ANCA positive", "points_range": "-1" },
+        { "label": "Eosinophilia ≥1×10^9/L", "points_range": "-4" }
+      ]
+    },
+    "egpa_eosinophilic_granulomatosis_with_polyangiitis": {
+      "cutoff_score_for_classification": 6,
+      "key_criteria": [
+        { "label": "Obstructive airway disease", "points_range": "+3" },
+        { "label": "Nasal polyps", "points_range": "+3" },
+        { "label": "Mononeuritis multiplex", "points_range": "+1" },
+        { "label": "Blood eosinophilia ≥1×10^9/L", "points_range": "+5" },
+        { "label": "Extravascular eosinophilic-predominant inflammation on biopsy", "points_range": "+2" },
+        { "label": "cANCA or PR3-ANCA positive", "points_range": "-3" },
+        { "label": "Haematuria", "points_range": "-1" }
+      ]
+    }
+  },
+  "todo": "Encode all three scoring engines with exact EULAR/ACR 2022 item weights and the Chapel Hill nomenclature mapping — Day 2.",
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "2022 American College of Rheumatology/European Alliance of Associations for Rheumatology classification criteria for granulomatosis with polyangiitis",
+      "authors": "Robson JC, Grayson PC, Ponte C, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2022,
+      "volume": "81",
+      "issue": "3",
+      "pages": "315-320",
+      "doi": "10.1136/annrheumdis-2021-221795",
+      "why_it_matters": "Current GPA classification. Derived from the DCVAS (Diagnostic and Classification Criteria for Vasculitis) study of >6,000 cases. Replaces 1990 ACR criteria."
+    },
+    {
+      "type": "classification_criteria",
+      "title": "2022 American College of Rheumatology/European Alliance of Associations for Rheumatology classification criteria for microscopic polyangiitis",
+      "authors": "Suppiah R, Robson JC, Grayson PC, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2022,
+      "volume": "81",
+      "issue": "3",
+      "pages": "321-326",
+      "doi": "10.1136/annrheumdis-2021-221796",
+      "why_it_matters": "Current MPA classification. MPO-ANCA carries strongest single weight (+6). Distinguishes MPA from GPA primarily on ANCA specificity + absence of granuloma."
+    },
+    {
+      "type": "classification_criteria",
+      "title": "2022 American College of Rheumatology/European Alliance of Associations for Rheumatology classification criteria for eosinophilic granulomatosis with polyangiitis",
+      "authors": "Grayson PC, Ponte C, Suppiah R, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2022,
+      "volume": "81",
+      "issue": "3",
+      "pages": "309-314",
+      "doi": "10.1136/annrheumdis-2021-221794",
+      "why_it_matters": "Current EGPA classification. Eosinophilia ≥1×10^9/L is the highest-weighted positive item (+5). Distinguishes EGPA from asthma+eosinophilia mimics."
+    },
+    {
+      "type": "nomenclature",
+      "title": "2012 Revised International Chapel Hill Consensus Conference Nomenclature of Vasculitides",
+      "authors": "Jennette JC, Falk RJ, Bacon PA, et al.",
+      "journal": "Arthritis Rheum",
+      "year": 2013,
+      "volume": "65",
+      "issue": "1",
+      "pages": "1-11",
+      "doi": "10.1002/art.37715",
+      "pmid": "23045170",
+      "why_it_matters": "The reference nomenclature for all systemic vasculitides. Defines the vessel-size taxonomy and AAV as a discrete group within small-vessel vasculitis."
+    },
+    {
+      "type": "primer",
+      "title": "ANCA-associated vasculitis",
+      "authors": "Kitching AR, Anders H-J, Basu N, et al.",
+      "journal": "Nat Rev Dis Primers",
+      "year": 2020,
+      "volume": "6",
+      "issue": "1",
+      "pages": "71",
+      "doi": "10.1038/s41572-020-0204-y",
+      "why_it_matters": "Comprehensive Nature Primer covering genetics, pathogenesis, kidney/pulmonary involvement, contemporary treatment (rituximab/cyclophosphamide/avacopan)."
+    },
+    {
+      "type": "trial_landmark_nejm",
+      "title": "Avacopan for the treatment of ANCA-associated vasculitis",
+      "authors": "Jayne DRW, Merkel PA, Schall TJ, Bekker P; ADVOCATE Study Group",
+      "journal": "N Engl J Med",
+      "year": 2021,
+      "volume": "384",
+      "issue": "7",
+      "pages": "599-609",
+      "doi": "10.1056/NEJMoa2023386",
+      "why_it_matters": "ADVOCATE trial — C5a receptor antagonist avacopan non-inferior to prednisone taper for remission induction; superior for sustained remission. Steroid-sparing evidence that reshaped AAV treatment."
+    },
+    {
+      "type": "trial_landmark_nejm",
+      "title": "Rituximab versus cyclophosphamide for ANCA-associated vasculitis",
+      "authors": "Stone JH, Merkel PA, Spiera R, et al.; RAVE-ITN Research Group",
+      "journal": "N Engl J Med",
+      "year": 2010,
+      "volume": "363",
+      "issue": "3",
+      "pages": "221-232",
+      "doi": "10.1056/NEJMoa0909905",
+      "why_it_matters": "RAVE trial — rituximab non-inferior to cyclophosphamide for remission induction; superior for relapsing disease. Established rituximab as first-line for severe AAV."
+    }
+  ]
+}

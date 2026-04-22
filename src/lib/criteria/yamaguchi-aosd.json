@@ -57,5 +57,70 @@
     { "id": "y_excl_infection", "label": "Infection (especially sepsis, EBV mononucleosis)", "source_fields": ["labs.blood_culture", "labs.EBV_serology", "narrative.infection"] },
     { "id": "y_excl_malignancy", "label": "Malignancy (especially lymphoma)", "source_fields": ["imaging.lymphoma_features", "narrative.malignancy"] },
     { "id": "y_excl_other_rheum", "label": "Other rheumatic disease (especially vasculitis, RA, SLE)", "source_fields": ["labs.ANCA", "labs.anti_CCP", "labs.anti_dsDNA"] }
+  ],
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "Preliminary criteria for classification of adult Still's disease",
+      "authors": "Yamaguchi M, Ohta A, Tsunematsu T, et al.",
+      "journal": "J Rheumatol",
+      "year": 1992,
+      "volume": "19",
+      "issue": "3",
+      "pages": "424-430",
+      "pmid": "1578458",
+      "why_it_matters": "The 1992 Yamaguchi criteria remain the most widely used classification criteria for AOSD worldwide. Sensitivity ~96%, specificity ~92% in the derivation cohort."
+    },
+    {
+      "type": "landmark_review",
+      "title": "Mechanisms, biomarkers and targets for adult-onset Still's disease",
+      "authors": "Feist E, Mitrovic S, Fautrel B",
+      "journal": "Nat Rev Rheumatol",
+      "year": 2018,
+      "volume": "14",
+      "issue": "10",
+      "pages": "603-618",
+      "doi": "10.1038/s41584-018-0081-x",
+      "why_it_matters": "Current reference review on AOSD pathophysiology, biomarkers (ferritin, glycosylated ferritin, IL-18, IL-1β), and targeted therapy (anakinra, canakinumab, tocilizumab). Frames AOSD as autoinflammatory not autoimmune.",
+      "verify_pending": true
+    },
+    {
+      "type": "epidemiology_clinical",
+      "title": "Adult-onset Still's disease",
+      "authors": "Gerfaud-Valentin M, Jamilloux Y, Iwaz J, Sève P",
+      "journal": "Autoimmun Rev",
+      "year": 2014,
+      "volume": "13",
+      "issue": "7",
+      "pages": "708-722",
+      "doi": "10.1016/j.autrev.2014.01.058",
+      "why_it_matters": "Comprehensive clinical review covering presentation patterns (monocyclic, polycyclic, chronic articular), complications (macrophage activation syndrome), and differential diagnosis vs mimics.",
+      "verify_pending": true
+    },
+    {
+      "type": "biomarker",
+      "title": "Diagnostic value of ferritin and glycosylated ferritin in adult onset Still's disease",
+      "authors": "Fautrel B, Le Moël G, Saint-Marcoux B, et al.",
+      "journal": "J Rheumatol",
+      "year": 2001,
+      "volume": "28",
+      "issue": "2",
+      "pages": "322-329",
+      "pmid": "11246670",
+      "why_it_matters": "Glycosylated ferritin <20% (in a setting of very high total ferritin, often >5× ULN) is highly specific for AOSD. Useful when Yamaguchi criteria are borderline."
+    },
+    {
+      "type": "complication_mas",
+      "title": "Life-threatening complications of adult-onset Still's disease",
+      "authors": "Efthimiou P, Kadavath S, Mehta B",
+      "journal": "Clin Rheumatol",
+      "year": 2014,
+      "volume": "33",
+      "issue": "3",
+      "pages": "305-314",
+      "doi": "10.1007/s10067-014-2487-4",
+      "pmid": "24435354",
+      "why_it_matters": "Review of life-threatening AOSD complications including macrophage activation syndrome / secondary HLH (~12-15% of severe AOSD, ~10-22% mortality). Key flags: falling ferritin trajectory despite worsening, cytopenias, elevated triglycerides, low fibrinogen, hepatosplenomegaly."
+    }
   ]
 }

@@ -1,0 +1,118 @@
+{
+  "id": "acr-eular-igg4rd-2019",
+  "name": "2019 ACR/EULAR Classification Criteria for IgG4-Related Disease",
+  "classification_rule": "Three steps: (1) entry criterion met — clinical or radiologic involvement of a typical organ; (2) no exclusion criterion met (e.g. fever, ANCA, haemoptysis, positive ANA, CCP, certain biopsy findings, ~30 listed); (3) inclusion score ≥20 across 8 weighted domains. ALL THREE must hold to classify.",
+  "step_1_entry_criterion": {
+    "label": "Characteristic clinical or radiologic involvement of a typical organ (pancreas, salivary glands, lacrimal glands, retroperitoneum, kidneys, lungs, meninges, aorta, mediastinum, thyroid) OR pathologic evidence of a lymphoplasmacytic inflammatory process with IgG4+ cells",
+    "source_fields": ["imaging.typical_igg4_organ_involvement", "pathology.lymphoplasmacytic_infiltrate"]
+  },
+  "step_2_exclusions_partial": [
+    "Fever or unexplained constitutional symptoms",
+    "ANCA positive",
+    "Anti-SSA/Ro or anti-SSB/La positive",
+    "Rapid progression",
+    "Haemoptysis",
+    "Biopsy showing granulomatous inflammation",
+    "Biopsy showing neutrophilic infiltration",
+    "Pathology showing necrosis"
+  ],
+  "step_3_inclusion_domains": [
+    {
+      "domain": "pathology",
+      "items": [
+        { "label": "Dense lymphocyte infiltrate", "points": 4 },
+        { "label": "Dense lymphoplasmacytic infiltrate with obliterative phlebitis and/or storiform fibrosis", "points": 13 },
+        { "label": "Dense lymphoplasmacytic infiltrate AND storiform fibrosis AND obliterative phlebitis (all three)", "points": 25 }
+      ]
+    },
+    {
+      "domain": "immunostaining",
+      "items": [
+        { "label": "IgG4:IgG ratio 0.41 or higher, OR 10-50 IgG4+ cells/HPF", "points": 7 },
+        { "label": "IgG4:IgG ratio ≥0.40 AND >50 IgG4+ cells/HPF", "points": 14 },
+        { "label": "IgG4:IgG ratio ≥0.40 AND IgG4+ cells/HPF consistent with organ (tissue-specific cut-off)", "points": 16 }
+      ]
+    },
+    {
+      "domain": "serology",
+      "items": [
+        { "label": "Serum IgG4 normal", "points": 0 },
+        { "label": "Serum IgG4 >normal but <2× ULN", "points": 4 },
+        { "label": "Serum IgG4 2-5× ULN", "points": 6 },
+        { "label": "Serum IgG4 >5× ULN", "points": 11 }
+      ]
+    },
+    { "domain": "bilateral_lacrimal_gland_involvement", "points_if_present": 14 },
+    { "domain": "pancreatic_and_biliary_involvement", "points_if_typical_type_1_aip_pattern": 19 },
+    { "domain": "retroperitoneal_involvement", "points_if_circumferential_aorta_or_anteromedial_iliac": 8 },
+    { "domain": "renal_involvement", "points_if_hypocomplementaemia_or_renal_pelvis_thickening_or_bilateral_cortical_low_density": 6 },
+    { "domain": "lung_involvement", "points_if_peribronchovascular_thickening_or_paravertebral_band_like": 10 }
+  ],
+  "todo": "Encode the full 8-domain inclusion scorer + ~30-item exclusion checker — Day 2.",
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "The 2019 American College of Rheumatology/European League Against Rheumatism classification criteria for IgG4-related disease",
+      "authors": "Wallace ZS, Naden RP, Chari S, et al.",
+      "journal": "Arthritis Rheumatol",
+      "year": 2020,
+      "volume": "72",
+      "issue": "1",
+      "pages": "7-19",
+      "doi": "10.1002/art.41120",
+      "also_published": "Ann Rheum Dis. 2020;79(1):77-87. doi:10.1136/annrheumdis-2019-216561",
+      "why_it_matters": "First formal classification criteria for IgG4-RD. Three-step (entry → exclusions → scored inclusions) design prevents overdiagnosis by excluding mimics early. Validated sensitivity 82%, specificity 98%."
+    },
+    {
+      "type": "landmark_review_nejm",
+      "title": "IgG4-related disease",
+      "authors": "Stone JH, Zen Y, Deshpande V",
+      "journal": "N Engl J Med",
+      "year": 2012,
+      "volume": "366",
+      "issue": "6",
+      "pages": "539-551",
+      "doi": "10.1056/NEJMra1104650",
+      "pmid": "22316447",
+      "why_it_matters": "The definitive NEJM review that popularised IgG4-RD as a unified multi-organ entity. Explains the pathology triad (lymphoplasmacytic infiltrate, storiform fibrosis, obliterative phlebitis) that drives the scoring."
+    },
+    {
+      "type": "pathogenesis_update",
+      "title": "IgG4-related disease: an update on pathophysiology and implications for clinical care",
+      "authors": "Perugino CA, Stone JH",
+      "journal": "Nat Rev Rheumatol",
+      "year": 2020,
+      "volume": "16",
+      "issue": "12",
+      "pages": "702-714",
+      "doi": "10.1038/s41584-020-0500-7",
+      "why_it_matters": "Contemporary Nature review covering T-follicular helper cells, CD4+ CTLs, plasmablast expansion, and rationale for B-cell depletion (rituximab) as first-line therapy."
+    },
+    {
+      "type": "diagnostic_pathology",
+      "title": "Consensus statement on the pathology of IgG4-related disease",
+      "authors": "Deshpande V, Zen Y, Chan JK, et al.",
+      "journal": "Mod Pathol",
+      "year": 2012,
+      "volume": "25",
+      "issue": "9",
+      "pages": "1181-1192",
+      "doi": "10.1038/modpathol.2012.72",
+      "why_it_matters": "Pathology consensus that defines the histologic triad used in the scoring system. Reference for reporting biopsies in suspected IgG4-RD.",
+      "verify_pending": true
+    },
+    {
+      "type": "management",
+      "title": "International consensus guidance statement on the management and treatment of IgG4-related disease",
+      "authors": "Khosroshahi A, Wallace ZS, Crowe JL, et al.",
+      "journal": "Arthritis Rheumatol",
+      "year": 2015,
+      "volume": "67",
+      "issue": "7",
+      "pages": "1688-1699",
+      "doi": "10.1002/art.39132",
+      "why_it_matters": "Expert consensus on induction with glucocorticoids, use of rituximab in relapsing/steroid-intolerant patients, and monitoring serum IgG4 + imaging.",
+      "verify_pending": true
+    }
+  ]
+}

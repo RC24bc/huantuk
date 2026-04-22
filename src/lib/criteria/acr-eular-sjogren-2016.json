@@ -1,0 +1,117 @@
+{
+  "id": "acr-eular-sjogren-2016",
+  "name": "2016 ACR/EULAR Classification Criteria for Primary Sjögren's Syndrome",
+  "classification_rule": "Target: patients with at least one symptom of ocular/oral dryness, OR suspicion from ESSDAI questionnaire. Weighted scoring; total ≥4 = classify as primary Sjögren's. Exclusion of relevant mimics required.",
+  "target_population": [
+    "At least one symptom of ocular or oral dryness (per AECG inclusion criteria) OR",
+    "Suspected Sjögren's from the ESSDAI systemic disease questionnaire"
+  ],
+  "exclusions": [
+    "Head and neck radiotherapy history",
+    "Active hepatitis C infection (confirmed by PCR)",
+    "AIDS",
+    "Sarcoidosis",
+    "Amyloidosis",
+    "Graft versus host disease",
+    "IgG4-related disease"
+  ],
+  "weighted_items": [
+    {
+      "id": "sjg_biopsy",
+      "label": "Labial salivary gland with focal lymphocytic sialadenitis and focus score ≥1 focus/4 mm²",
+      "points": 3,
+      "source_fields": ["pathology.labial_salivary_biopsy", "pathology.focus_score"]
+    },
+    {
+      "id": "sjg_anti_ro",
+      "label": "Anti-SSA/Ro antibody positive",
+      "points": 3,
+      "source_fields": ["labs.anti_SSA_Ro"]
+    },
+    {
+      "id": "sjg_ocular_staining",
+      "label": "Ocular staining score ≥5 (or van Bijsterveld ≥4) in at least one eye",
+      "points": 1,
+      "source_fields": ["examination.ocular_staining_score", "examination.van_bijsterveld"]
+    },
+    {
+      "id": "sjg_schirmer",
+      "label": "Schirmer test ≤5 mm/5 min in at least one eye",
+      "points": 1,
+      "source_fields": ["examination.schirmer_test_mm"]
+    },
+    {
+      "id": "sjg_unstimulated_salivary_flow",
+      "label": "Unstimulated whole salivary flow rate ≤0.1 mL/min",
+      "points": 1,
+      "source_fields": ["examination.unstimulated_salivary_flow"]
+    }
+  ],
+  "classification_score_cutoff": 4,
+  "todo": "Encode the eligibility + exclusion gates and the weighted scorer; wire the systemic disease activity index (ESSDAI) for organ-domain scoring on Day 2.",
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "2016 American College of Rheumatology/European League Against Rheumatism classification criteria for primary Sjögren's syndrome",
+      "authors": "Shiboski CH, Shiboski SC, Seror R, et al.",
+      "journal": "Arthritis Rheumatol",
+      "year": 2017,
+      "volume": "69",
+      "issue": "1",
+      "pages": "35-45",
+      "doi": "10.1002/art.39859",
+      "also_published": "Ann Rheum Dis. 2017;76(1):9-16. doi:10.1136/annrheumdis-2016-210571",
+      "why_it_matters": "Current reference classification. Consolidates 2002 AECG and 2012 ACR criteria. Sensitivity 96%, specificity 95%. Biopsy and anti-SSA/Ro each weighted 3 — either alone with one ocular/oral objective test gives classification."
+    },
+    {
+      "type": "landmark_review_nejm",
+      "title": "Primary Sjögren's syndrome",
+      "authors": "Mariette X, Criswell LA",
+      "journal": "N Engl J Med",
+      "year": 2018,
+      "volume": "378",
+      "issue": "10",
+      "pages": "931-939",
+      "doi": "10.1056/NEJMcp1702514",
+      "pmid": "29514034",
+      "why_it_matters": "Current NEJM clinical-practice review. Covers pathogenesis, systemic manifestations (interstitial lung disease, renal tubular acidosis, neuropathy, lymphoma risk), and evidence-based management."
+    },
+    {
+      "type": "primer",
+      "title": "Sjögren syndrome",
+      "authors": "Brito-Zerón P, Baldini C, Bootsma H, et al.",
+      "journal": "Nat Rev Dis Primers",
+      "year": 2016,
+      "volume": "2",
+      "issue": "",
+      "pages": "16047",
+      "doi": "10.1038/nrdp.2016.47",
+      "why_it_matters": "Comprehensive Nature Primer covering epidemiology, mechanism, clinical phenotypes, diagnosis, and management including 40× increased risk of B-cell NHL (MALT)."
+    },
+    {
+      "type": "management_guideline",
+      "title": "EULAR recommendations for the management of Sjögren's syndrome with topical and systemic therapies",
+      "authors": "Ramos-Casals M, Brito-Zerón P, Bombardieri S, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2020,
+      "volume": "79",
+      "issue": "1",
+      "pages": "3-18",
+      "doi": "10.1136/annrheumdis-2019-216114",
+      "why_it_matters": "Current EULAR guidance on topical (artificial tears, cholinergics, cyclosporine drops) and systemic (hydroxychloroquine, MTX, MMF, rituximab for severe systemic disease) therapy."
+    },
+    {
+      "type": "lymphoma_risk",
+      "title": "Rheumatoid factor and disease activity are independent predictors of lymphoma in primary Sjögren's syndrome",
+      "authors": "Nocturne G, Virone A, Ng W-F, et al.",
+      "journal": "Arthritis Rheumatol",
+      "year": 2016,
+      "volume": "68",
+      "issue": "4",
+      "pages": "977-985",
+      "doi": "10.1002/art.39518",
+      "pmid": "26606524",
+      "why_it_matters": "Multicentre cohort identifying rheumatoid factor and ESSDAI disease activity as independent predictors of lymphoma in primary Sjögren's. Critical follow-up driver when classification is confirmed — clusters with persistent parotid enlargement, low C4, cryoglobulinaemia."
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "id": "acr-eular-sle-2019",
+  "name": "2019 EULAR/ACR Classification Criteria for Systemic Lupus Erythematosus",
+  "classification_rule": "Entry criterion: ANA ≥1:80 on HEp-2 cells or equivalent positive test ever. Then score additive domains; ≥10 points AND at least 1 clinical criterion = classify as SLE. Only the highest-scoring item in each domain counts.",
+  "entry_criterion": {
+    "id": "sle_entry_ana",
+    "label": "ANA ≥1:80 on HEp-2 cells (ever)",
+    "source_fields": ["labs.ANA_titre", "labs.ANA_pattern"]
+  },
+  "domains_clinical": [
+    { "id": "sle_constitutional_fever", "domain": "constitutional", "label": "Fever >38.3°C", "points": 2 },
+    { "id": "sle_haematology_leukopenia", "domain": "haematology", "label": "Leukopenia <4.0×10^9/L", "points": 3 },
+    { "id": "sle_haematology_thrombocytopenia", "domain": "haematology", "label": "Thrombocytopenia <100×10^9/L", "points": 4 },
+    { "id": "sle_haematology_aiha", "domain": "haematology", "label": "Autoimmune haemolysis", "points": 4 },
+    { "id": "sle_neuropsych_delirium", "domain": "neuropsychiatric", "label": "Delirium", "points": 2 },
+    { "id": "sle_neuropsych_psychosis", "domain": "neuropsychiatric", "label": "Psychosis", "points": 3 },
+    { "id": "sle_neuropsych_seizure", "domain": "neuropsychiatric", "label": "Seizure", "points": 5 },
+    { "id": "sle_mucocutaneous_alopecia", "domain": "mucocutaneous", "label": "Non-scarring alopecia", "points": 2 },
+    { "id": "sle_mucocutaneous_oral_ulcers", "domain": "mucocutaneous", "label": "Oral ulcers", "points": 2 },
+    { "id": "sle_mucocutaneous_subacute_or_discoid", "domain": "mucocutaneous", "label": "Subacute cutaneous OR discoid lupus", "points": 4 },
+    { "id": "sle_mucocutaneous_acute_lupus", "domain": "mucocutaneous", "label": "Acute cutaneous lupus", "points": 6 },
+    { "id": "sle_serositis_effusion", "domain": "serositis", "label": "Pleural or pericardial effusion", "points": 5 },
+    { "id": "sle_serositis_acute_pericarditis", "domain": "serositis", "label": "Acute pericarditis", "points": 6 },
+    { "id": "sle_msk_joint_involvement", "domain": "musculoskeletal", "label": "Joint involvement (≥2 joints with inflammatory arthritis features)", "points": 6 },
+    { "id": "sle_renal_proteinuria", "domain": "renal", "label": "Proteinuria >0.5 g/24h", "points": 4 },
+    { "id": "sle_renal_class_ii_v", "domain": "renal", "label": "Renal biopsy Class II or V lupus nephritis", "points": 8 },
+    { "id": "sle_renal_class_iii_iv", "domain": "renal", "label": "Renal biopsy Class III or IV lupus nephritis", "points": 10 }
+  ],
+  "domains_immunologic": [
+    { "id": "sle_apl_positive", "domain": "antiphospholipid", "label": "Anti-cardiolipin OR anti-β2GP1 OR lupus anticoagulant positive", "points": 2 },
+    { "id": "sle_complement_low_c3_or_c4", "domain": "complement", "label": "Low C3 OR low C4", "points": 3 },
+    { "id": "sle_complement_low_c3_and_c4", "domain": "complement", "label": "Low C3 AND low C4", "points": 4 },
+    { "id": "sle_sle_specific_ab_anti_dsdna", "domain": "sle_specific_antibodies", "label": "Anti-dsDNA OR anti-Smith positive", "points": 6 }
+  ],
+  "todo": "Encode full additive-scoring engine and mutual-exclusion logic (only highest item per domain counts) — Day 2.",
+  "references": [
+    {
+      "type": "classification_criteria",
+      "title": "2019 European League Against Rheumatism/American College of Rheumatology classification criteria for systemic lupus erythematosus",
+      "authors": "Aringer M, Costenbader K, Daikh D, et al.",
+      "journal": "Arthritis Rheumatol",
+      "year": 2019,
+      "volume": "71",
+      "issue": "9",
+      "pages": "1400-1412",
+      "doi": "10.1002/art.40930",
+      "also_published": "Ann Rheum Dis. 2019;78(9):1151-1159. doi:10.1136/annrheumdis-2018-214819",
+      "why_it_matters": "Current reference classification. Introduces ANA entry criterion + additive weighted scoring. Sensitivity 96%, specificity 93%. Improves on 1997 ACR and 2012 SLICC by explicitly handling competing explanations."
+    },
+    {
+      "type": "primer",
+      "title": "Systemic lupus erythematosus",
+      "authors": "Kaul A, Gordon C, Crow MK, et al.",
+      "journal": "Nat Rev Dis Primers",
+      "year": 2016,
+      "volume": "2",
+      "issue": "",
+      "pages": "16039",
+      "doi": "10.1038/nrdp.2016.39",
+      "pmid": "27306639",
+      "why_it_matters": "Comprehensive Nature Primer on SLE covering epidemiology, mechanism, diagnosis, management, quality of life, and outlook."
+    },
+    {
+      "type": "management_guideline",
+      "title": "2019 update of the EULAR recommendations for the management of systemic lupus erythematosus",
+      "authors": "Fanouriakis A, Kostopoulou M, Alunno A, et al.",
+      "journal": "Ann Rheum Dis",
+      "year": 2019,
+      "volume": "78",
+      "issue": "6",
+      "pages": "736-745",
+      "doi": "10.1136/annrheumdis-2019-215089",
+      "pmid": "30926722",
+      "why_it_matters": "Current EULAR treat-to-target recommendations: hydroxychloroquine in all, glucocorticoid minimisation, early immunosuppression, belimumab/anifrolumab."
+    },
+    {
+      "type": "landmark_review_nejm",
+      "title": "Systemic lupus erythematosus",
+      "authors": "Tsokos GC",
+      "journal": "N Engl J Med",
+      "year": 2011,
+      "volume": "365",
+      "issue": "22",
+      "pages": "2110-2121",
+      "doi": "10.1056/NEJMra1100359",
+      "why_it_matters": "Highly cited NEJM review covering SLE immunopathogenesis, clinical heterogeneity, and treatment principles. Standard reference for the mechanism section of any SLE writeup."
+    },
+    {
+      "type": "lupus_nephritis",
+      "title": "Update on Lupus Nephritis: Core Curriculum 2020",
+      "authors": "Parikh SV, Almaani S, Brodsky S, Rovin BH",
+      "journal": "Am J Kidney Dis",
+      "year": 2020,
+      "volume": "76",
+      "issue": "2",
+      "pages": "265-281",
+      "doi": "10.1053/j.ajkd.2019.10.017",
+      "pmid": "32220510",
+      "why_it_matters": "Core Curriculum review on lupus nephritis. ISN/RPS biopsy class stratification (II–V) drives treatment intensity; classes III/IV carry the highest score in the SLE classification criteria and strongly favour classification."
+    }
+  ]
+}
