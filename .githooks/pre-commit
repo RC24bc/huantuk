@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# PII pre-commit guardrail — blocks any commit that stages a file whose path or
+# content matches one of the fingerprint patterns from memory/feedback_huantuk_pii_guard.md.
+# To disable for a single commit in an emergency: git commit --no-verify (NOT RECOMMENDED).
+
+set -u
+
+STAGED="$(git diff --cached --name-only --diff-filter=ACMR)"
+[ -z "$STAGED" ] && exit 0
+
+# 1. Path check
+BAD_PATHS="$(printf '%s\n' "$STAGED" | grep -Ei '(pantai|kpj|pathlab|whatsapp|medical.report|raw-files|demo-data-staging|docs\.json|chat_conversations\.json|organizations\.json|project\.json)' || true)"
+if [ -n "$BAD_PATHS" ]; then
+  echo "🛑 PII guardrail: filename matches forbidden pattern" >&2
+  echo "$BAD_PATHS" >&2
+  echo "→ Review memory/feedback_huantuk_pii_guard.md before forcing." >&2
+  exit 1
+fi
+
+# 2. Content check — only on text-like files
+CONTENT_HITS=""
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  [ ! -f "$f" ] && continue
+  # Skip binaries (fast path: check first 8k for NUL)
+  head -c 8192 "$f" | LC_ALL=C grep -q $'\x00' && continue
+  if git diff --cached -- "$f" | grep -Ei '(^\+.*)(NRIC|IC\s?[Nn]o|MyKad|Passport\s?[Nn]o|Pantai\s+Hospital|KPJ\s+(Klang|Ampang|Damansara|Selangor)|Pathlab|WhatsApp\s+Image)' > /dev/null 2>&1; then
+    CONTENT_HITS="$CONTENT_HITS\n$f"
+  fi
+done <<< "$STAGED"
+
+if [ -n "$CONTENT_HITS" ]; then
+  printf "🛑 PII guardrail: content matches identifier pattern in:%b\n" "$CONTENT_HITS" >&2
+  echo "→ Strip identifiers or move the file to demo-data-staging/ (gitignored)." >&2
+  exit 1
+fi
+
+exit 0

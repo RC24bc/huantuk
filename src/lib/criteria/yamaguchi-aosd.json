@@ -1,0 +1,61 @@
+{
+  "id": "yamaguchi-1992",
+  "name": "Yamaguchi criteria for Adult-Onset Still's Disease",
+  "citation": "Yamaguchi M, et al. J Rheumatol. 1992;19(3):424-430.",
+  "classification_rule": "At least 5 criteria (including at least 2 major) AND all exclusions absent.",
+  "major": [
+    {
+      "id": "y_fever",
+      "label": "Fever ≥39°C lasting ≥1 week",
+      "source_fields": ["vitals.temperature_max_c", "narrative.fever_duration_days"],
+      "threshold": { "temperature_c_gte": 39, "duration_days_gte": 7 }
+    },
+    {
+      "id": "y_arthralgia",
+      "label": "Arthralgia or arthritis lasting ≥2 weeks",
+      "source_fields": ["narrative.joint_pain", "narrative.joint_swelling"],
+      "threshold": { "duration_weeks_gte": 2 }
+    },
+    {
+      "id": "y_rash",
+      "label": "Typical rash (evanescent, salmon-coloured, macular/maculopapular, usually on trunk/limbs during fever spikes)",
+      "source_fields": ["narrative.rash_description", "clinical_photo_analysis"],
+      "threshold": { "morphology_any_of": ["salmon", "evanescent", "fever_associated_rash"] }
+    },
+    {
+      "id": "y_leukocytosis",
+      "label": "Leukocytosis ≥10,000/mm³ with ≥80% neutrophils",
+      "source_fields": ["labs.WBC", "labs.neutrophil_pct"],
+      "threshold": { "WBC_gte": 10000, "neutrophil_pct_gte": 80 }
+    }
+  ],
+  "minor": [
+    {
+      "id": "y_sore_throat",
+      "label": "Sore throat",
+      "source_fields": ["narrative.sore_throat"]
+    },
+    {
+      "id": "y_lymphadenopathy",
+      "label": "Lymphadenopathy or splenomegaly",
+      "source_fields": ["imaging.lymph_nodes", "imaging.spleen_size_cm", "examination.lymphadenopathy"]
+    },
+    {
+      "id": "y_lft_abnormal",
+      "label": "Abnormal LFTs (especially AST/ALT/LDH elevation)",
+      "source_fields": ["labs.AST", "labs.ALT", "labs.LDH"],
+      "threshold": { "any_elevated_above_ULN": true }
+    },
+    {
+      "id": "y_negative_serology",
+      "label": "Negative RF and negative ANA (titre)",
+      "source_fields": ["labs.RF", "labs.ANA"],
+      "threshold": { "RF_negative": true, "ANA_negative_or_low_titre": true }
+    }
+  ],
+  "exclusions": [
+    { "id": "y_excl_infection", "label": "Infection (especially sepsis, EBV mononucleosis)", "source_fields": ["labs.blood_culture", "labs.EBV_serology", "narrative.infection"] },
+    { "id": "y_excl_malignancy", "label": "Malignancy (especially lymphoma)", "source_fields": ["imaging.lymphoma_features", "narrative.malignancy"] },
+    { "id": "y_excl_other_rheum", "label": "Other rheumatic disease (especially vasculitis, RA, SLE)", "source_fields": ["labs.ANCA", "labs.anti_CCP", "labs.anti_dsDNA"] }
+  ]
+}

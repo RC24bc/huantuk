@@ -1,0 +1,85 @@
+# ============================================================
+# PII GUARDRAIL — DO NOT REMOVE WITHOUT READING memory/feedback_huantuk_pii_guard.md
+# Repo is PUBLIC. Uncle's real medical records must NEVER be committed.
+# Any file matching these patterns will be blocked from git.
+# ============================================================
+
+# Raw medical records from vault (NEVER commit)
+files/
+raw-files/
+demo-data-staging/
+demo-data-raw/
+*.raw.pdf
+*.raw.jpg
+*.raw.jpeg
+
+# Facility / document-source fingerprints (names from uncle's real records)
+*[Pp]antai*
+*[Kk][Pp][Jj]*
+*[Pp]athlab*
+*[Ww]hats[Aa]pp*
+*[Mm]edical*[Rr]eport*
+*medical-report*
+
+# Known claude.ai project metadata files (may contain identifiers)
+docs.json
+chat_conversations.json
+organizations.json
+project.json
+conversations/
+
+# Secrets
+.env
+.env.*
+!env.example
+!.env.example
+
+# ============================================================
+# Next.js / Node defaults
+# ============================================================
+
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+coverage/
+.nyc_output/
+
+# next.js
+.next/
+out/
+
+# production
+build/
+dist/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# vercel
+.vercel/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# editors
+.vscode/
+.idea/
+*.swp
+*~

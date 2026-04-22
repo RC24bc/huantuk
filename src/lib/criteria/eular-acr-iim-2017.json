@@ -1,0 +1,45 @@
+{
+  "id": "eular-acr-iim-2017",
+  "name": "2017 EULAR/ACR Classification Criteria for Adult and Juvenile Idiopathic Inflammatory Myopathies",
+  "citation": "Lundberg IE, et al. Ann Rheum Dis. 2017;76(12):1955-1964.",
+  "classification_rule": "Probability-based score. Probability ≥55% = possible IIM; ≥60% definite with biopsy; ≥90% definite without biopsy.",
+  "score_model": "logistic",
+  "items_without_biopsy": [
+    { "id": "age_onset_18_40", "label": "Age of onset of first symptom related to disease ≥18 and <40 yrs", "weight": 1.3 },
+    { "id": "age_onset_ge_40", "label": "Age of onset of first symptom ≥40 yrs", "weight": 2.1 },
+    { "id": "prox_upper_weakness", "label": "Objective symmetric weakness, proximal upper extremities", "weight": 0.7 },
+    { "id": "prox_lower_weakness", "label": "Objective symmetric weakness, proximal lower extremities", "weight": 0.8 },
+    { "id": "neck_flexor_weaker", "label": "Neck flexors relatively weaker than neck extensors", "weight": 1.9 },
+    { "id": "leg_prox_weaker_distal", "label": "In legs, proximal muscles relatively weaker than distal", "weight": 0.9 },
+    { "id": "heliotrope", "label": "Heliotrope rash", "weight": 3.1 },
+    { "id": "gottron_papules", "label": "Gottron's papules", "weight": 2.1 },
+    { "id": "gottron_sign", "label": "Gottron's sign", "weight": 3.3 },
+    { "id": "dysphagia_dysmotility", "label": "Dysphagia or oesophageal dysmotility", "weight": 0.7 },
+    { "id": "anti_jo1", "label": "Anti-Jo-1 (anti-histidyl-tRNA synthetase) autoantibody", "weight": 3.9 },
+    { "id": "ck_or_ldh_elevated", "label": "Elevated serum CK or LDH or AST or ALT", "weight": 1.3 }
+  ],
+  "items_with_biopsy_addon": [
+    { "id": "biopsy_endomysial_infiltrate_non_invading", "label": "Endomysial infiltrate without invading non-necrotic muscle fibres", "weight": 1.7 },
+    { "id": "biopsy_perimysial_or_perivascular", "label": "Perimysial and/or perivascular infiltrate", "weight": 1.2 },
+    { "id": "biopsy_perifascicular_atrophy", "label": "Perifascicular atrophy", "weight": 1.9 },
+    { "id": "biopsy_rimmed_vacuoles", "label": "Rimmed vacuoles", "weight": 3.1 }
+  ],
+  "notes_on_4_7_reasoning": [
+    "For Asian male with multi-organ inflammation, normal CK but muscle soreness and interstitial lung findings, strongly weight anti-MDA5 dermatomyositis.",
+    "Anti-MDA5, anti-Jo-1, anti-PL-7/PL-12, anti-TIF1γ sit on the MYOP18 panel — pending results are rate-limiting.",
+    "TIF1γ positivity in adults ≥40 raises cancer screen urgency (paraneoplastic DM)."
+  ],
+  "source_field_mapping": {
+    "labs.CK": ["ck_or_ldh_elevated"],
+    "labs.LDH": ["ck_or_ldh_elevated"],
+    "labs.AST": ["ck_or_ldh_elevated"],
+    "labs.ALT": ["ck_or_ldh_elevated"],
+    "labs.anti_Jo1": ["anti_jo1"],
+    "narrative.proximal_weakness_upper": ["prox_upper_weakness"],
+    "narrative.proximal_weakness_lower": ["prox_lower_weakness"],
+    "narrative.heliotrope_rash": ["heliotrope"],
+    "narrative.gottron_papules": ["gottron_papules"],
+    "narrative.gottron_sign": ["gottron_sign"],
+    "narrative.dysphagia": ["dysphagia_dysmotility"]
+  }
+}
