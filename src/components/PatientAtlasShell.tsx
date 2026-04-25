@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import DropZone, { type ExtractedDoc } from "./DropZone";
 import SuggestedTests from "./SuggestedTests";
 import DifferentialReasoningPanel from "./DifferentialReasoning";
 import CriteriaScoringPanel from "./CriteriaScoring";
 import MimicCheckPanel from "./MimicCheckPanel";
 import DrugDiscoveryPanel from "./DrugDiscoveryPanel";
+import { DEMO_PRESETS, findPreset, type DemoPresetId } from "@/lib/diagnostics/demo-presets";
 import type {
   CurrentDifferential,
   SuggestResponse,
@@ -14,11 +16,21 @@ import type {
 } from "@/lib/diagnostics/types";
 import type { MimicCheckResponse } from "@/lib/agents/mimic-detector";
 
-const DEMO_FREE_TEXT = `Adult male, mid-50s, persistent quotidian fevers >2 months peaking ≥39.4°C, evanescent salmon-coloured truncal rash appearing during fever spikes and clearing within hours, polyarthralgia (wrists, knees, MCPs) without erosive change on plain films, cervical and inguinal lymphadenopathy, sore throat, and mild hepatomegaly on ultrasound. WBC 14.2×10⁹/L with 86% neutrophils. Ferritin 8,420 ng/mL with low glycosylated-ferritin fraction (~12%). ESR 92 mm/hr, CRP 88 mg/L. ANA negative. RF transiently positive at 1:80 then negative on repeat. Anti-CCP, anti-dsDNA, anti-Sm, ENA panel (SSA/SSB/RNP/Sm), ANCA (PR3/MPO), and complement (C3/C4) all unremarkable. Liver enzymes 2× ULN (AST 78, ALT 64, LDH 412). Blood cultures, EBV/CMV/parvovirus serologies, HIV and TB workup negative. Bone marrow biopsy: reactive marrow, no malignancy. Whole-body PET-CT: diffuse lymph-node uptake without dominant mass. Symptoms partially respond to NSAIDs, fully respond to prednisolone 0.5 mg/kg.`;
-
 type Status = "idle" | "loading" | "ready" | "error";
 
 export default function PatientAtlasShell() {
+  return (
+    <Suspense fallback={null}>
+      <PatientAtlasShellInner />
+    </Suspense>
+  );
+}
+
+function PatientAtlasShellInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [docs, setDocs] = useState<ExtractedDoc[]>([]);
   const [freeText, setFreeText] = useState<string>("");
 
@@ -38,6 +50,9 @@ export default function PatientAtlasShell() {
 
   const completedDocs = docs.filter((d) => d.status === "done");
   const canSynthesise = completedDocs.length > 0 || freeText.trim().length > 0;
+
+  // Track which preset we already auto-ran so back/forward navigation doesn't double-run.
+  const autoRunForPresetRef = useRef<DemoPresetId | null>(null);
 
   async function runSynthesise(textOverride?: string) {
     setSynthStatus("loading");
@@ -130,9 +145,18 @@ export default function PatientAtlasShell() {
     }
   }
 
-  function loadDemo() {
-    setFreeText(DEMO_FREE_TEXT);
-    void runSynthesise(DEMO_FREE_TEXT);
+  function loadPreset(id: DemoPresetId, opts?: { updateUrl?: boolean }) {
+    const p = findPreset(id);
+    if (!p) return;
+    setFreeText(p.case_text);
+    setDocs([]);
+    autoRunForPresetRef.current = id;
+    if (opts?.updateUrl !== false) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("case", id);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+    void runSynthesise(p.case_text);
   }
 
   function clearAll() {
@@ -147,13 +171,40 @@ export default function PatientAtlasShell() {
     setMimicStatus("idle");
     setMimicData(null);
     setMimicError(null);
+    autoRunForPresetRef.current = null;
+    if (searchParams.has("case")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("case");
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }
   }
+
+  // Auto-load + auto-run when a `?case=…` preset is in the URL.
+  useEffect(() => {
+    const caseParam = searchParams.get("case");
+    if (!caseParam) return;
+    const preset = findPreset(caseParam);
+    if (!preset) return;
+    if (autoRunForPresetRef.current === preset.id) return;
+    autoRunForPresetRef.current = preset.id;
+    setFreeText(preset.case_text);
+    void runSynthesise(preset.case_text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const topDifferential = synthData?.differentials?.[0] ?? null;
   const caseSummary = synthData?.narrative_summary ?? (freeText.trim() || undefined);
+  const activePresetId = searchParams.get("case");
 
   return (
     <div className="space-y-8">
+      <PresetSelector
+        activeId={activePresetId}
+        onPick={(id) => loadPreset(id)}
+        disabled={synthStatus === "loading"}
+      />
+
       <DropZone onDocsChange={onDocsChange} />
 
       <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-5">
@@ -177,13 +228,6 @@ export default function PatientAtlasShell() {
             className="text-sm px-4 py-2 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
           >
             {synthStatus === "loading" ? "Synthesising…" : "Synthesise differentials"}
-          </button>
-          <button
-            onClick={loadDemo}
-            disabled={synthStatus === "loading"}
-            className="text-sm px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900 disabled:opacity-50"
-          >
-            Load demo case
           </button>
           {(freeText.length > 0 || docs.length > 0 || synthData) && (
             <button
@@ -253,5 +297,52 @@ export default function PatientAtlasShell() {
         </>
       )}
     </div>
+  );
+}
+
+function PresetSelector({
+  activeId,
+  onPick,
+  disabled,
+}: {
+  activeId: string | null;
+  onPick: (id: DemoPresetId) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-5 bg-zinc-50 dark:bg-zinc-950">
+      <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
+        <div>
+          <h3 className="text-sm font-semibold tracking-tight">Try a demo case</h3>
+          <p className="text-xs text-zinc-500 mt-0.5">
+            One click loads a hand-crafted case → auto-runs Diagnostic Synthesizer → exposes Drug Discovery buttons. Zero API spend; deterministic.
+          </p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {DEMO_PRESETS.map((p) => {
+          const isActive = activeId === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => onPick(p.id)}
+              disabled={disabled}
+              className={
+                "text-left p-3 rounded-md border transition-colors disabled:opacity-50 " +
+                (isActive
+                  ? "border-zinc-900 bg-white dark:border-zinc-50 dark:bg-zinc-900"
+                  : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-500 dark:hover:border-zinc-500 bg-white dark:bg-black")
+              }
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-medium text-sm">{p.short_label}</span>
+                {isActive && <span className="text-xs text-zinc-500">Active</span>}
+              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-snug">{p.one_line}</p>
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }

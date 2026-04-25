@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { CRITERIA, findCriteria, topReferences, flatCriterionList } from "@/lib/criteria";
+import { tryPresetFallback } from "@/lib/diagnostics/preset-fallbacks";
 import type {
   SynthesiseRequest,
   SynthesiseResponse,
@@ -288,155 +289,17 @@ function clamp01(n: number): number {
 }
 
 function buildDeterministicFallback(body: SynthesiseRequest): SynthesiseResponse {
-  const text = (body.free_text_summary ?? "").toLowerCase();
-  const isDemo =
-    text.includes("ferritin") &&
-    (text.includes("evanescent") || text.includes("salmon")) &&
-    text.includes("rash");
-
-  if (!isDemo) {
-    return {
-      narrative_summary:
-        "ANTHROPIC_API_KEY not configured. Add your key to .env.local and restart for Opus 4.7 synthesis. The deterministic demo case (Adult-Onset Still's-pattern presentation) will still show the full citation UX.",
-      differentials: [],
-      criteria_scores: [],
-      source: "deterministic-fallback",
-      warnings: ["No API key — Opus synthesis disabled. Click 'Load demo case' to see the citation UX."],
-    };
-  }
-
-  const yam = findCriteria("yamaguchi-1992")!;
-  const sle = findCriteria("acr-eular-sle-2019")!;
-  const aav = findCriteria("acr-eular-aav-2022")!;
-  const igg4 = findCriteria("acr-eular-igg4rd-2019")!;
-  const iim = findCriteria("eular-acr-iim-2017")!;
-
-  const differentials: DifferentialReasoning[] = [
-    {
-      differential_id: "yamaguchi-1992",
-      differential_label: yam.name,
-      posterior_probability: 0.62,
-      key_evidence:
-        "Quotidian fevers ≥39°C >2 months, evanescent salmon rash during spikes, neutrophilic leukocytosis, ferritin 8,420 with low glycosylated fraction, RF/ANA negative, malignancy and infection excluded — fits Yamaguchi.",
-      supporting_findings: [
-        "Fever ≥39°C >1 week",
-        "Evanescent salmon trunk rash",
-        "WBC 14.2k, 86% neutrophils",
-        "Ferritin 8,420 (glycosylated <20%)",
-        "RF and ANA negative",
-        "Lymphadenopathy, sore throat",
-        "Infection / malignancy excluded",
-      ],
-      contradicting_findings: ["No erosive arthritis on imaging (does not exclude AOSD)"],
-      citations: topReferences(yam, 3),
-    },
-    {
-      differential_id: "eular-acr-iim-2017",
-      differential_label: iim.name,
-      posterior_probability: 0.12,
-      key_evidence:
-        "Inflammatory pattern present but no proximal weakness, no CK elevation reported, and no characteristic skin findings — IIM less likely without further muscle data.",
-      supporting_findings: ["Systemic inflammation", "Liver enzyme elevation"],
-      contradicting_findings: [
-        "No proximal muscle weakness",
-        "No CK reported elevated",
-        "No Gottron / heliotrope rash",
-      ],
-      citations: topReferences(iim, 2),
-    },
-    {
-      differential_id: "acr-eular-aav-2022",
-      differential_label: aav.name,
-      posterior_probability: 0.08,
-      key_evidence:
-        "ANCA (PR3/MPO) negative on a quality assay and no organ-specific vasculitic features (no glomerulonephritis, no upper-airway destruction, no mononeuritis) — AAV unlikely.",
-      supporting_findings: ["Systemic inflammation"],
-      contradicting_findings: [
-        "ANCA PR3 / MPO negative",
-        "No renal involvement",
-        "No ENT / pulmonary haemorrhage",
-      ],
-      citations: topReferences(aav, 2),
-    },
-    {
-      differential_id: "acr-eular-sle-2019",
-      differential_label: sle.name,
-      posterior_probability: 0.06,
-      key_evidence:
-        "EULAR/ACR 2019 SLE classification requires ANA ≥1:80 as the entry criterion — patient is ANA-negative on validated immunofluorescence, which excludes formal classification despite multi-system features.",
-      supporting_findings: ["Multi-system inflammation"],
-      contradicting_findings: [
-        "ANA negative — entry criterion fails",
-        "Anti-dsDNA / anti-Sm negative",
-        "Complement normal",
-      ],
-      citations: topReferences(sle, 2),
-    },
-    {
-      differential_id: "acr-eular-igg4rd-2019",
-      differential_label: igg4.name,
-      posterior_probability: 0.05,
-      key_evidence:
-        "No characteristic IgG4-RD organ involvement (no salivary/lacrimal swelling, no autoimmune pancreatitis, no retroperitoneal fibrosis) and no tissue IgG4+ plasma-cell infiltrate documented.",
-      supporting_findings: ["Lymphadenopathy"],
-      contradicting_findings: [
-        "No salivary/lacrimal involvement",
-        "No autoimmune pancreatitis",
-        "No fibrosing organ disease",
-      ],
-      citations: topReferences(igg4, 2),
-    },
-  ];
-
-  const criteria_scores: CriteriaScore[] = [
-    {
-      criteria_id: yam.id,
-      criteria_name: yam.name,
-      citation: yam.citation ?? "",
-      classification_rule: yam.classification_rule ?? "",
-      classification_status: "meets",
-      met_count: 6,
-      total_count: 11,
-      criteria: [
-        { criterion_id: "y_fever", label: "Fever ≥39°C lasting ≥1 week", status: "met", evidence: "Documented fevers ≥39.4°C for >2 months" },
-        { criterion_id: "y_arthralgia", label: "Arthralgia / arthritis ≥2 weeks", status: "met", evidence: "Polyarthralgia involving wrists, knees, MCPs" },
-        { criterion_id: "y_rash", label: "Typical evanescent salmon rash with fever", status: "met", evidence: "Truncal salmon rash appearing during fever spikes, clearing within hours" },
-        { criterion_id: "y_leukocytosis", label: "WBC ≥10,000 with ≥80% neutrophils", status: "met", evidence: "WBC 14.2×10⁹/L, 86% neutrophils" },
-        { criterion_id: "y_sore_throat", label: "Sore throat", status: "met", evidence: "Reported on history" },
-        { criterion_id: "y_lymphadenopathy", label: "Lymphadenopathy / splenomegaly", status: "met", evidence: "Cervical and inguinal lymphadenopathy; mild hepatomegaly" },
-        { criterion_id: "y_lft_abnormal", label: "Abnormal LFTs", status: "met", evidence: "AST 78, ALT 64, LDH 412 (>1× ULN)" },
-        { criterion_id: "y_negative_serology", label: "Negative RF and ANA", status: "met", evidence: "Both negative on confirmatory testing" },
-        { criterion_id: "y_excl_infection", label: "Infection excluded", status: "met", evidence: "Cultures, EBV/CMV/parvo, HIV, TB negative" },
-        { criterion_id: "y_excl_malignancy", label: "Malignancy excluded", status: "met", evidence: "Bone marrow reactive; PET diffuse, no mass" },
-        { criterion_id: "y_excl_other_rheum", label: "Other rheumatic disease excluded", status: "met", evidence: "ANCA, anti-CCP, anti-dsDNA all negative" },
-      ],
-      references: topReferences(yam, 4),
-    },
-    {
-      criteria_id: sle.id,
-      criteria_name: sle.name,
-      citation: sle.citation ?? "",
-      classification_rule: sle.classification_rule ?? "",
-      classification_status: "does_not_meet",
-      met_count: 0,
-      total_count: flatCriterionList(sle).length,
-      criteria: flatCriterionList(sle).map((x) => ({
-        criterion_id: x.id ?? "",
-        label: x.label ?? "",
-        status: "unmet" as const,
-      })),
-      references: topReferences(sle, 3),
-    },
-  ];
+  const text = body.free_text_summary ?? "";
+  const preset = tryPresetFallback(text);
+  if (preset) return preset;
 
   return {
     narrative_summary:
-      "Mid-50s adult male with two months of quotidian fevers, evanescent salmon-coloured truncal rash during spikes, polyarthralgia, lymphadenopathy, neutrophilic leukocytosis, hyper-ferritinaemia (8,420 ng/mL with low glycosylated fraction ~12%), and complete steroid response after a comprehensive negative workup for infection, malignancy, and connective-tissue disease. The clinical pattern fits an autoinflammatory rather than autoimmune phenotype. Adult-Onset Still's Disease meeting Yamaguchi criteria is the leading classification.",
-    differentials,
-    criteria_scores,
+      "ANTHROPIC_API_KEY not configured. Add your key to .env.local and restart for Opus 4.7 synthesis. Click any of the demo presets (Adult-Onset Still's, Refractory SLE, IgG4-RD, Undifferentiated CTD) to see the full citation UX with no API call.",
+    differentials: [],
+    criteria_scores: [],
     source: "deterministic-fallback",
-    warnings: [
-      "ANTHROPIC_API_KEY not configured — showing pre-baked demo synthesis. Add your key to .env.local for live Opus 4.7 reasoning over your own cases.",
-    ],
+    warnings: ["No API key — Opus synthesis disabled. Try a demo preset to see the workflow."],
   };
 }
+

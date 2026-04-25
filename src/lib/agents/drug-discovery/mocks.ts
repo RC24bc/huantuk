@@ -22,6 +22,7 @@ const DIFFERENTIAL_LABELS: Record<string, string> = {
   "acr-eular-aav-2022": "ANCA-Associated Vasculitis",
   "acr-eular-igg4rd-2019": "IgG4-Related Disease",
   "acr-eular-sjogren-2016": "Sjögren's Syndrome",
+  "ucd-overlap": "Undifferentiated Connective Tissue Disease",
 };
 
 export function mockRepurpose(diffId: string): RepurposeResponse {
@@ -180,6 +181,192 @@ export function mockRepurpose(diffId: string): RepurposeResponse {
               year: 2022,
               pmid: "35193860",
               doi: "10.1136/annrheumdis-2021-221814",
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  if (diffId === "acr-eular-sle-2019") {
+    return {
+      top_differential_id: diffId,
+      top_differential_label: label,
+      is_mock: true,
+      source: "mock-up",
+      candidates: [
+        {
+          drug: "Anifrolumab",
+          drug_class: "Anti-type-I interferon receptor (anti-IFNAR1) monoclonal antibody",
+          approved_indication: "FDA/EMA-approved (2021) for moderate-to-severe SLE in adults receiving standard therapy.",
+          proposed_mechanism_in_case:
+            "Type-I IFN signature is dominant in this patient (anti-Ro+, anti-Sm+, low complement, multi-system flare); IFNAR1 blockade closes the upstream interferon driver, improving cutaneous + serological disease beyond MMF/CYC pathway.",
+          evidence_level: "fda_approved",
+          availability: "approved_intl",
+          est_cost_myr_monthly: [16000, 22000],
+          safety_flags: [
+            "Increased URTI / herpes zoster risk",
+            "Defer live vaccines",
+            "Caution if baseline lymphopenia",
+            "Monthly IV infusion logistics",
+          ],
+          reasoning_steps: [
+            "1. TULIP-1/TULIP-2 trials demonstrated BICLA response advantage.",
+            "2. Strong IFN-signature phenotype in this patient supports response prediction.",
+            "3. Steroid-sparing potential after 6 months.",
+            "4. Not yet routinely reimbursed in MY — out-of-pocket or named-patient.",
+            "5. Pair with continued HCQ; MMF can be tapered as response allows.",
+          ],
+          references: [
+            {
+              title: "Anifrolumab efficacy and safety in moderate-to-severe SLE: TULIP-2 trial",
+              authors: "Morand EF, Furie R, Tanaka Y, et al.",
+              journal: "New England Journal of Medicine",
+              year: 2020,
+              pmid: "31851795",
+              doi: "10.1056/NEJMoa1912196",
+            },
+          ],
+        },
+        {
+          drug: "Belimumab",
+          drug_class: "Anti-BAFF (BLyS) monoclonal antibody",
+          approved_indication: "FDA/EMA-approved for active SLE and active lupus nephritis (added 2020) in adults and paediatric patients.",
+          proposed_mechanism_in_case:
+            "BAFF blockade reduces autoreactive B-cell survival in active LN; the BLISS-LN trial showed renal-response advantage when added to standard induction. This patient has biopsy-proven Class IV disease with rising anti-dsDNA — ideal phenotype.",
+          evidence_level: "fda_approved",
+          availability: "approved_my",
+          est_cost_myr_monthly: [6500, 9500],
+          safety_flags: [
+            "Serious infection risk",
+            "Caution in mood / suicidality history",
+            "Slow onset of effect (3–6 months)",
+          ],
+          reasoning_steps: [
+            "1. BLISS-LN demonstrated renal complete response benefit.",
+            "2. Anti-dsDNA + low-complement phenotype most likely to respond.",
+            "3. Add to MMF rather than switching; combination is the trial regimen.",
+            "4. Approved + marketed in Malaysia (named patient).",
+            "5. Monthly IV (or weekly SC) — patient preference question.",
+          ],
+          references: [
+            {
+              title: "Belimumab in patients with active lupus nephritis (BLISS-LN)",
+              authors: "Furie R, Rovin BH, Houssiau F, et al.",
+              journal: "New England Journal of Medicine",
+              year: 2020,
+              pmid: "32937045",
+              doi: "10.1056/NEJMoa2001180",
+            },
+          ],
+        },
+        {
+          drug: "Voclosporin",
+          drug_class: "Calcineurin inhibitor (next-generation)",
+          approved_indication: "FDA-approved (2021) for active lupus nephritis as triple therapy with MMF + low-dose steroids.",
+          proposed_mechanism_in_case:
+            "Triple therapy combination addresses the unresolved proteinuria 1.8 g/24h despite MMF + CYC; AURORA-1 trial showed superior renal complete response at 52 weeks.",
+          evidence_level: "fda_approved",
+          availability: "approved_intl",
+          est_cost_myr_monthly: [12000, 18000],
+          safety_flags: [
+            "eGFR monitoring (acute decline reversible)",
+            "Hypertension",
+            "CYP3A4 drug interactions",
+            "Avoid if eGFR < 45",
+          ],
+          reasoning_steps: [
+            "1. AURORA-1 + AURORA-2 extension confirmed 24-month safety + efficacy.",
+            "2. Patient eGFR 68 — within voclosporin therapeutic window.",
+            "3. Triple therapy with MMF (continued) + low-dose steroid taper.",
+            "4. Not yet MY-approved — named-patient import.",
+            "5. Monitor eGFR + BP weekly initially.",
+          ],
+          references: [
+            {
+              title: "Voclosporin for lupus nephritis: AURORA 1 phase 3 trial",
+              authors: "Rovin BH, Teng YKO, Ginzler EM, et al.",
+              journal: "Lancet",
+              year: 2021,
+              pmid: "33864840",
+              doi: "10.1016/S0140-6736(21)00578-X",
+            },
+          ],
+        },
+      ],
+    };
+  }
+
+  if (diffId === "acr-eular-igg4rd-2019") {
+    return {
+      top_differential_id: diffId,
+      top_differential_label: label,
+      is_mock: true,
+      source: "mock-up",
+      candidates: [
+        {
+          drug: "Rituximab",
+          drug_class: "Anti-CD20 chimeric monoclonal antibody",
+          approved_indication: "FDA/EMA-approved for NHL, CLL, RA, ANCA-associated vasculitis, pemphigus vulgaris. Not yet on-label for IgG4-RD.",
+          proposed_mechanism_in_case:
+            "IgG4-RD is a B-cell driven plasmablast disease; CD20 depletion of memory B-cells reduces IgG4-secreting plasmablast turnover. Two open-label trials show median 90% reduction in serum IgG4 + clinical remission within 6 months.",
+          evidence_level: "phase2_trial",
+          availability: "approved_my",
+          est_cost_myr_monthly: [4500, 8000],
+          safety_flags: [
+            "Infusion reactions",
+            "Hepatitis B reactivation — screen pre-dose",
+            "PML risk (very rare)",
+            "Hypogammaglobulinaemia after repeated cycles",
+          ],
+          reasoning_steps: [
+            "1. Two prospective open-label trials (Mass General, Genoa) show >90% serum IgG4 reduction.",
+            "2. Faster steroid taper compared to glucocorticoid monotherapy.",
+            "3. Reasonable first-line in fibrotic / multi-organ disease.",
+            "4. Available + reimbursable in Malaysia for haem-onc indications; off-label IgG4-RD use established.",
+            "5. Mandatory hepatitis B serology before infusion.",
+          ],
+          references: [
+            {
+              title: "Rituximab for IgG4-related disease: a prospective, open-label trial",
+              authors: "Carruthers MN, Topazian MD, Khosroshahi A, et al.",
+              journal: "Annals of the Rheumatic Diseases",
+              year: 2015,
+              pmid: "25351522",
+              doi: "10.1136/annrheumdis-2014-206605",
+            },
+          ],
+        },
+        {
+          drug: "Inebilizumab",
+          drug_class: "Anti-CD19 humanised afucosylated monoclonal antibody",
+          approved_indication: "FDA-approved for neuromyelitis optica spectrum disorder (NMOSD).",
+          proposed_mechanism_in_case:
+            "CD19 depletes a broader B-cell + plasmablast population than CD20, including IgG4-secreting plasmablasts directly. The MITIGATE Phase 3 trial in IgG4-RD reported a 87% reduction in flare risk at 52 weeks.",
+          evidence_level: "phase3_trial",
+          availability: "approved_intl",
+          est_cost_myr_monthly: [22000, 32000],
+          safety_flags: [
+            "Infusion reactions",
+            "Increased infection risk",
+            "Hypogammaglobulinaemia",
+            "Twice-yearly dosing reduces clinic burden",
+          ],
+          reasoning_steps: [
+            "1. MITIGATE Phase 3 (NEJM 2024) is the first positive RCT in IgG4-RD.",
+            "2. Broader B-cell coverage than rituximab — addresses plasmablast resistance.",
+            "3. Bi-annual IV infusion — better adherence than every-6-month rituximab.",
+            "4. Not yet MY-approved; named-patient import via Singapore HSA.",
+            "5. Reserved for refractory or relapsing disease post-rituximab.",
+          ],
+          references: [
+            {
+              title: "Inebilizumab in IgG4-related disease (MITIGATE phase 3)",
+              authors: "Stone JH, Khosroshahi A, Hellmark T, et al.",
+              journal: "New England Journal of Medicine",
+              year: 2024,
+              pmid: "38804516",
+              doi: "10.1056/NEJMoa2402905",
             },
           ],
         },
