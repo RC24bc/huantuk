@@ -6,8 +6,8 @@ export default function Home() {
       <header className="border-b border-zinc-200 dark:border-zinc-800">
         <div className="mx-auto max-w-5xl px-6 py-5 flex items-baseline justify-between">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Patient Atlas</h1>
-            <p className="text-sm text-zinc-500">Huantuk — post-workup diagnostic synthesis for baffling cases</p>
+            <h1 className="text-xl font-semibold tracking-tight">Huantuk · Patient Atlas</h1>
+            <p className="text-sm text-zinc-500">Diagnostic synthesis + personalised drug discovery for autoimmune cases that don&apos;t fit the textbook</p>
           </div>
           <a
             href="https://github.com/RC24bc/huantuk"
@@ -24,27 +24,31 @@ export default function Home() {
             For doctors treating patients whose symptoms remain unexplained after investigations.
           </h2>
           <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-            Upload the full folder — lab panels, imaging reports, clinic letters, clinical photos — from any combination of hospitals. Patient Atlas builds a unified longitudinal timeline, scores the case against published classification criteria (Yamaguchi, EULAR/ACR IIM, SLICC, IgG4-RD, ANCA-associated vasculitis, Sjögren&apos;s), and generates a handoff letter in the receiving specialist&apos;s register.
+            Upload the full folder — lab panels, imaging reports, clinic letters, clinical photos — from any combination of hospitals. Huantuk builds a unified case object, scores the patient against published classification criteria (Yamaguchi AOSD, EULAR/ACR IIM, SLE, RA, AAV, IgG4-RD, Sjögren&apos;s), screens for autoimmune mimics, ranks the next highest-information-gain investigations, and — when standard care has been exhausted — surfaces drug repurposing, off-label and clinical-trial candidates with citations and Malaysian access pathways.
           </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-4 max-w-2xl">
-            Decision support for clinicians. Not a diagnostic device. Not patient-facing.
+            Clinical decision support. Not a diagnostic device. The treating doctor remains the prescriber.
           </p>
         </section>
 
         <PatientAtlasShell />
 
-        <section className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <section className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <Feature
-            title="Longitudinal timeline"
-            body="Heterogeneous PDFs + images merged into one time-keyed view grouped by organ system."
-          />
-          <Feature
-            title="Criteria scoring"
-            body="Met / unmet / unknown against each of seven published classification criteria sets."
+            title="Diagnostic Synthesizer"
+            body="Heterogeneous PDFs merged into one case. Cited differential reasoning. Criteria scored. Mimics flagged."
           />
           <Feature
             title="What's missing"
-            body="Opus 4.7 ranks the next 5 tests with the highest information gain — so doctors order the test that actually moves the diagnosis."
+            body="Opus 4.7 ranks the next 5 tests with highest information gain — so doctors order the test that actually moves the diagnosis."
+          />
+          <Feature
+            title="Drug Repurposing + Off-Label"
+            body="When standard care runs out: existing drugs whose mechanism plausibly addresses this patient&apos;s phenotype, with Malaysian access pathways."
+          />
+          <Feature
+            title="Trial Matching"
+            body="Currently enrolling trials globally — flight cost from KL, inclusion match reasoning, exclusion concerns flagged for clinician review."
           />
         </section>
 

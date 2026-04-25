@@ -5,28 +5,34 @@ import DropZone, { type ExtractedDoc } from "./DropZone";
 import SuggestedTests from "./SuggestedTests";
 import DifferentialReasoningPanel from "./DifferentialReasoning";
 import CriteriaScoringPanel from "./CriteriaScoring";
+import MimicCheckPanel from "./MimicCheckPanel";
+import DrugDiscoveryPanel from "./DrugDiscoveryPanel";
 import type {
   CurrentDifferential,
   SuggestResponse,
   SynthesiseResponse,
 } from "@/lib/diagnostics/types";
+import type { MimicCheckResponse } from "@/lib/agents/mimic-detector";
 
 const DEMO_FREE_TEXT = `Adult male, mid-50s, persistent quotidian fevers >2 months peaking ≥39.4°C, evanescent salmon-coloured truncal rash appearing during fever spikes and clearing within hours, polyarthralgia (wrists, knees, MCPs) without erosive change on plain films, cervical and inguinal lymphadenopathy, sore throat, and mild hepatomegaly on ultrasound. WBC 14.2×10⁹/L with 86% neutrophils. Ferritin 8,420 ng/mL with low glycosylated-ferritin fraction (~12%). ESR 92 mm/hr, CRP 88 mg/L. ANA negative. RF transiently positive at 1:80 then negative on repeat. Anti-CCP, anti-dsDNA, anti-Sm, ENA panel (SSA/SSB/RNP/Sm), ANCA (PR3/MPO), and complement (C3/C4) all unremarkable. Liver enzymes 2× ULN (AST 78, ALT 64, LDH 412). Blood cultures, EBV/CMV/parvovirus serologies, HIV and TB workup negative. Bone marrow biopsy: reactive marrow, no malignancy. Whole-body PET-CT: diffuse lymph-node uptake without dominant mass. Symptoms partially respond to NSAIDs, fully respond to prednisolone 0.5 mg/kg.`;
 
-type SuggestStatus = "idle" | "loading" | "ready" | "error";
-type SynthStatus = "idle" | "loading" | "ready" | "error";
+type Status = "idle" | "loading" | "ready" | "error";
 
 export default function PatientAtlasShell() {
   const [docs, setDocs] = useState<ExtractedDoc[]>([]);
   const [freeText, setFreeText] = useState<string>("");
 
-  const [synthStatus, setSynthStatus] = useState<SynthStatus>("idle");
+  const [synthStatus, setSynthStatus] = useState<Status>("idle");
   const [synthData, setSynthData] = useState<SynthesiseResponse | null>(null);
   const [synthError, setSynthError] = useState<string | null>(null);
 
-  const [suggestStatus, setSuggestStatus] = useState<SuggestStatus>("idle");
+  const [suggestStatus, setSuggestStatus] = useState<Status>("idle");
   const [suggestData, setSuggestData] = useState<SuggestResponse | null>(null);
   const [suggestError, setSuggestError] = useState<string | null>(null);
+
+  const [mimicStatus, setMimicStatus] = useState<Status>("idle");
+  const [mimicData, setMimicData] = useState<MimicCheckResponse | null>(null);
+  const [mimicError, setMimicError] = useState<string | null>(null);
 
   const onDocsChange = useCallback((next: ExtractedDoc[]) => setDocs(next), []);
 
@@ -38,6 +44,8 @@ export default function PatientAtlasShell() {
     setSynthError(null);
     setSuggestStatus("idle");
     setSuggestData(null);
+    setMimicStatus("idle");
+    setMimicData(null);
     try {
       const res = await fetch("/api/synthesise", {
         method: "POST",
@@ -97,6 +105,31 @@ export default function PatientAtlasShell() {
     }
   }
 
+  async function runMimicCheck() {
+    if (!synthData || synthData.differentials.length === 0) return;
+    setMimicStatus("loading");
+    setMimicError(null);
+    try {
+      const res = await fetch("/api/mimic-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          case_summary: synthData.narrative_summary || freeText.trim() || undefined,
+          differentials: synthData.differentials,
+        }),
+      });
+      const json = (await res.json()) as MimicCheckResponse | { error: string };
+      if (!res.ok || "error" in json) {
+        throw new Error("error" in json ? json.error : `HTTP ${res.status}`);
+      }
+      setMimicData(json);
+      setMimicStatus("ready");
+    } catch (err: unknown) {
+      setMimicError(err instanceof Error ? err.message : String(err));
+      setMimicStatus("error");
+    }
+  }
+
   function loadDemo() {
     setFreeText(DEMO_FREE_TEXT);
     void runSynthesise(DEMO_FREE_TEXT);
@@ -111,7 +144,13 @@ export default function PatientAtlasShell() {
     setSuggestStatus("idle");
     setSuggestData(null);
     setSuggestError(null);
+    setMimicStatus("idle");
+    setMimicData(null);
+    setMimicError(null);
   }
+
+  const topDifferential = synthData?.differentials?.[0] ?? null;
+  const caseSummary = synthData?.narrative_summary ?? (freeText.trim() || undefined);
 
   return (
     <div className="space-y-8">
@@ -183,6 +222,14 @@ export default function PatientAtlasShell() {
           <DifferentialReasoningPanel differentials={synthData.differentials} />
           <CriteriaScoringPanel scores={synthData.criteria_scores} />
 
+          <MimicCheckPanel
+            status={mimicStatus}
+            data={mimicData}
+            error={mimicError}
+            onRun={() => void runMimicCheck()}
+            hasDifferentials={synthData.differentials.length > 0}
+          />
+
           <SuggestedTests
             status={suggestStatus}
             data={suggestData}
@@ -195,6 +242,13 @@ export default function PatientAtlasShell() {
               void runSuggest(top, [], freeText.trim() || undefined);
             }}
             hasDifferentials={synthData.differentials.length > 0}
+          />
+
+          <DrugDiscoveryPanel
+            topDifferentialId={topDifferential?.differential_id ?? null}
+            topDifferentialLabel={topDifferential?.differential_label ?? null}
+            caseSummary={caseSummary}
+            extractedSummary={synthData.narrative_summary}
           />
         </>
       )}
