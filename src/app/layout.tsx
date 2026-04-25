@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Patient Atlas — Huantuk",
+  title: "Huantuk — When five hospitals can't tell you what's wrong",
   description:
-    "Post-workup diagnostic synthesis for autoimmune cases that defied investigation. Built on Claude Opus 4.7. Every recommendation cites a published source.",
+    "Huantuk reads every report you've ever had, across every clinic, and tells you in plain English what's most likely going on. Built on Claude Opus 4.7.",
 };
 
 export default function RootLayout({
