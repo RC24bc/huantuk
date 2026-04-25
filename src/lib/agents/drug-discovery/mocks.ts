@@ -297,6 +297,165 @@ export function mockRepurpose(diffId: string): RepurposeResponse {
     };
   }
 
+  if (diffId === "eular-acr-iim-2017") {
+    return {
+      top_differential_id: diffId,
+      top_differential_label: label,
+      is_mock: true,
+      source: "mock-up",
+      candidates: [
+        {
+          drug: "Intravenous Immunoglobulin (IVIG)",
+          drug_class: "Pooled human immunoglobulin",
+          approved_indication:
+            "FDA-approved for primary immunodeficiency, ITP, Kawasaki, CIDP, and (since 2021) for adult dermatomyositis (Octagam 10%).",
+          proposed_mechanism_in_case:
+            "Anti-HMGCR IMNM responds reliably to IVIG; anti-NXP2 dermatomyositis with calcinosis or refractory weakness also benefits. The 2021 ProDERM Phase 3 trial demonstrated clear DM benefit, making IVIG a guideline-supported option for this dual-MSA phenotype.",
+          evidence_level: "fda_approved",
+          availability: "approved_my",
+          est_cost_myr_monthly: [12000, 22000],
+          safety_flags: [
+            "Volume overload — caution in CKD stage 3a",
+            "Thromboembolic risk",
+            "Aseptic meningitis",
+            "Renal monitoring required",
+          ],
+          reasoning_steps: [
+            "1. ProDERM trial established Phase 3 efficacy for adult DM (NEJM 2022).",
+            "2. Pinal-Fernandez 2020 protocol shows IVIG is preferred first-line for anti-HMGCR IMNM.",
+            "3. IVIG is steroid-sparing — useful given pre-diabetic IFG already developing.",
+            "4. CKD 3a requires renal-friendly preparation + slower infusion.",
+            "5. Available in Malaysia at major tertiary centres.",
+          ],
+          references: [
+            {
+              title:
+                "Trial of intravenous immune globulin in dermatomyositis (ProDERM)",
+              authors: "Aggarwal R, Charles-Schoeman C, Schessl J, et al.",
+              journal: "New England Journal of Medicine",
+              year: 2022,
+              pmid: "36287101",
+              doi: "10.1056/NEJMoa2117912",
+            },
+            {
+              title:
+                "Treatment trial in immune-mediated necrotizing myopathy: a multicenter retrospective analysis",
+              authors: "Pinal-Fernandez I, Casal-Dominguez M, Mammen AL",
+              journal: "Neurology",
+              year: 2020,
+              pmid: "33323473",
+              doi: "10.1212/WNL.0000000000011175",
+            },
+          ],
+        },
+        {
+          drug: "Rituximab",
+          drug_class: "Anti-CD20 chimeric monoclonal antibody",
+          approved_indication:
+            "FDA/EMA-approved for non-Hodgkin lymphoma, CLL, RA, ANCA-associated vasculitis, pemphigus vulgaris. Not on-label for IIM but widely used.",
+          proposed_mechanism_in_case:
+            "B-cell depletion targets myositis-specific antibody production. The RIM trial (Oddis 2013) showed >80% of refractory adult/juvenile DM and adult PM patients met response criteria; case series support efficacy in anti-HMGCR IMNM and anti-NXP2 DM specifically.",
+          evidence_level: "phase2_trial",
+          availability: "approved_my",
+          est_cost_myr_monthly: [4500, 8000],
+          safety_flags: [
+            "Hepatitis B reactivation risk — patient is non-immune (sAg negative, sAb low) — mandatory pre-treatment HBV vaccination/prophylaxis decision",
+            "Infusion reactions",
+            "Hypogammaglobulinaemia after repeat cycles",
+            "PML risk (very rare)",
+          ],
+          reasoning_steps: [
+            "1. RIM trial supports use in refractory adult DM/PM.",
+            "2. Anti-HMGCR IMNM has growing case-series support for rituximab.",
+            "3. Patient hepatitis B serology shows no immunity — vaccination/prophylaxis required pre-dose.",
+            "4. 6-month dosing reduces clinic burden.",
+            "5. Available + reimbursable in Malaysia for haem-onc indications; off-label IIM use is established.",
+          ],
+          references: [
+            {
+              title:
+                "Rituximab in the treatment of refractory adult and juvenile dermatomyositis and adult polymyositis (RIM)",
+              authors: "Oddis CV, Reed AM, Aggarwal R, et al.",
+              journal: "Arthritis & Rheumatism",
+              year: 2013,
+              pmid: "23124935",
+              doi: "10.1002/art.37754",
+            },
+          ],
+        },
+        {
+          drug: "Tofacitinib",
+          drug_class: "JAK 1/3 inhibitor",
+          approved_indication:
+            "FDA/EMA-approved for rheumatoid arthritis, psoriatic arthritis, ulcerative colitis, juvenile idiopathic arthritis, ankylosing spondylitis.",
+          proposed_mechanism_in_case:
+            "JAK-STAT inhibition addresses the type-I-IFN-driven dermatomyositis transcriptional signature, especially anti-MDA5 and anti-NXP2 phenotypes; small open-label studies show rapid response in refractory cutaneous + myopathic disease.",
+          evidence_level: "phase2_trial",
+          availability: "approved_my",
+          est_cost_myr_monthly: [3500, 6000],
+          safety_flags: [
+            "Cytopenias",
+            "Reactivation of latent infection — TB / HSV / HBV",
+            "Lipid elevation",
+            "VTE risk in elderly",
+          ],
+          reasoning_steps: [
+            "1. Open-label trial (Paik 2021) showed dermatomyositis-disease-activity reduction.",
+            "2. Reasonable third-line after IVIG ± rituximab in this dual-MSA phenotype.",
+            "3. Oral once-daily — better adherence than infusion biologics.",
+            "4. Strong opportunistic-infection screening required pre-start.",
+            "5. Available in Malaysia for RA — off-label IIM use established.",
+          ],
+          references: [
+            {
+              title: "Tofacitinib in refractory dermatomyositis: an open-label pilot study",
+              authors: "Paik JJ, Casciola-Rosen L, Shin JY, et al.",
+              journal: "Annals of the Rheumatic Diseases",
+              year: 2021,
+              pmid: "33602673",
+              doi: "10.1136/annrheumdis-2020-219013",
+            },
+          ],
+        },
+        {
+          drug: "Mycophenolate mofetil",
+          drug_class: "Inhibitor of inosine monophosphate dehydrogenase (lymphocyte-selective)",
+          approved_indication:
+            "FDA/EMA-approved for prevention of organ-transplant rejection. Off-label across rheumatology including IIM.",
+          proposed_mechanism_in_case:
+            "Excellent oral steroid-sparing agent in IIM, with growing evidence specifically in anti-HMGCR IMNM. Particularly useful given the patient's pre-diabetic glucose status — minimising chronic steroid exposure is the priority.",
+          evidence_level: "case_series",
+          availability: "approved_my",
+          est_cost_myr_monthly: [400, 1200],
+          safety_flags: [
+            "GI intolerance",
+            "Cytopenias",
+            "Increased infection risk",
+            "Teratogenicity (not relevant here)",
+          ],
+          reasoning_steps: [
+            "1. Generic available in Malaysia at very low cost.",
+            "2. Oral, well-tolerated, monthly monitoring straightforward.",
+            "3. Reasonable steroid-sparing partner with IVIG.",
+            "4. Established off-label evidence base in adult IIM.",
+            "5. Better tolerated than azathioprine for many patients.",
+          ],
+          references: [
+            {
+              title:
+                "Mycophenolate mofetil for the treatment of idiopathic inflammatory myopathies: a long-term follow-up",
+              authors: "Rouster-Stevens KA, Morgan GA, Wang D, Pachman LM",
+              journal: "Pediatric Rheumatology",
+              year: 2010,
+              pmid: "20507542",
+              doi: "10.1186/1546-0096-8-22",
+            },
+          ],
+        },
+      ],
+    };
+  }
+
   if (diffId === "acr-eular-igg4rd-2019") {
     return {
       top_differential_id: diffId,

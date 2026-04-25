@@ -14,7 +14,12 @@
  * @public
  */
 
-export type DemoPresetId = "aosd" | "lupus-refractory" | "igg4rd" | "undifferentiated-ctd";
+export type DemoPresetId =
+  | "aosd"
+  | "lupus-refractory"
+  | "igg4rd"
+  | "undifferentiated-ctd"
+  | "iim-double-msa";
 
 export type DemoPreset = {
   id: DemoPresetId;
@@ -52,6 +57,58 @@ export const DEMO_PRESETS: DemoPreset[] = [
     short_label: "Undifferentiated CTD",
     one_line: "Multiple specialists, multiple hospitals, still no clear diagnosis",
     case_text: `Female patient, late 40s, with 4 years of constitutional symptoms — chronic fatigue limiting work to part-time, intermittent low-grade fevers (rarely documented above 37.8°C), Raynaud's phenomenon affecting fingers in cold weather since age 42, episodic livedo reticularis on the thighs, dry eyes (Schirmer's test 4 mm at 5 minutes bilaterally), occasional dry mouth, and migratory polyarthralgia (knees, wrists, ankles, never persistent in any one joint for more than two weeks at a time, no swelling on examination by 3 different rheumatologists). No malar rash, no oral ulcers, no alopecia. Multi-hospital workup over 4 years: ANA 1:160 speckled (consistently), anti-Ro/SSA weakly positive on two occasions but negative on third confirmation panel, anti-La/SSB negative, anti-dsDNA negative, anti-Sm negative, anti-RNP negative, anti-Scl-70 negative, anti-centromere negative, anti-Jo-1 negative, ANCA negative, anti-CCP negative, RF 18 IU/mL (just above upper normal), C3/C4 normal. ESR fluctuates 20–48 mm/hr; CRP 5–14 mg/L. Full blood count, renal function, liver enzymes, thyroid function all normal. Whole-body MRI 2 years ago: no significant findings. Salivary gland biopsy not performed. Pulmonary function tests normal. Echo normal. Patient has been seen by 6 specialists across 3 hospitals (KPJ, Pantai, Sunway) — primary diagnoses offered have included "undifferentiated connective tissue disease", "fibromyalgia", "chronic fatigue syndrome", and "early Sjögren's". No specific therapy started; trial of hydroxychloroquine for 6 months produced mild symptom improvement. Patient seeks resolution.`,
+  },
+  {
+    id: "iim-double-msa",
+    label: "Real Malaysian case · Anti-NXP2 + Anti-HMGCR overlap myopathy",
+    short_label: "Real case · IIM double MSA",
+    one_line: "Adult male · double myositis-specific antibodies · normal CK · paraneoplastic risk",
+    case_text: `Adult male, mid-60s, admitted to a Malaysian tertiary hospital with systemic inflammation requiring inpatient care; outpatient follow-up labs ~2 weeks post-discharge show partial response to inpatient therapy.
+
+Hematology evolution (admission → 2-week outpatient follow-up):
+- Haemoglobin 9.4 → 10.7 g/dL (normochromic normocytic anaemia, persistent)
+- Red cell distribution width 16.1 → 19.0 % (rising — mixed marrow picture)
+- White blood cell count 19.5 → 16.3 ×10⁹/L (leucocytosis, improving)
+- Neutrophil absolute 15.5 → 10.9 ×10⁹/L (neutrophilia, improving)
+- Eosinophil absolute 0.80 → 0.11 ×10⁹/L (peripheral eosinophilia on admission, normalised on follow-up)
+- Platelets 657 → 405 ×10⁹/L (reactive thrombocytosis, resolving)
+- Erythrocyte sedimentation rate 118 → 28 mm/hr (marked treatment response)
+
+Liver function panel:
+- Total protein 86 → 67 g/L
+- Albumin 23 → 30 g/L (low on admission, improving)
+- Globulin 63 → 37 g/L (markedly elevated polyclonal hyperglobulinaemia on admission, normalising) — albumin/globulin ratio reversal 0.37 → 0.81
+- Aspartate transaminase 64 → 18 U/L
+- Alanine transaminase 29 → 20 U/L
+- Alkaline phosphatase 122 → 91 U/L
+- Bilirubin within normal range
+- Gamma-glutamyl transferase normal
+- Lactate dehydrogenase 180 (normal)
+- FIB-4 score 1.12 (low risk for advanced fibrosis)
+
+Renal function:
+- Sodium 134 → 141 mmol/L
+- Creatinine 101 → 108 µmol/L (mild rise)
+- Estimated GFR (CKD-EPI) 68 → 63 mL/min/1.73m² (CKD stage 3a)
+- Glucose 5.8 → 7.7 mmol/L (impaired fasting glucose, possibly steroid-induced)
+- Uric acid normal; calcium / phosphate / cholesterol within normal limits
+
+CRITICAL INVESTIGATIONS — Inflammatory Myopathy Autoimmune Profile (18-marker panel, performed on admission):
+- ANA negative; anti-double-stranded DNA <10 IU/mL (negative)
+- Inflammatory Myopathy Autoimmune Profile:
+  • Anti-NXP2: POSITIVE
+  • Anti-HMGCR: POSITIVE
+  • All other myositis-specific and myositis-associated antibodies negative — anti-Jo-1, anti-MDA5, anti-TIF1γ, anti-SAE1, anti-SRP, anti-Mi-2 (M2 alpha + M2 beta), anti-PL-7, anti-PL-12, anti-EJ, anti-OJ, anti-Ku, anti-Scl100, anti-Scl75, anti-Ro52, anti-cN-1A all negative
+
+Creatine kinase: 46 U/L on admission, 34 U/L follow-up (NORMAL on both occasions — atypical for classical IMNM)
+
+Infectious / hepatic exclusion: hepatitis B surface antigen non-reactive (low surface antibody — non-immune), hepatitis C antibody non-reactive, Treponema pallidum antibody non-reactive.
+
+Tumour markers (admission): AFP <1.3 ug/L, CEA 0.6 ug/L, CA 19-9 14.4 U/mL, PSA 1.51 ng/mL — all within normal limits.
+
+Urinalysis: protein 1+, trace glucose, urobilinogen 16.0 µmol/L (mildly elevated); no haematuria, no casts, no leukocytes, no nitrites.
+
+Clinical context: hospital admission triggered by acute systemic-inflammatory presentation; diagnostic workup during admission identified the dual-positive myositis serology; patient improved with inpatient therapy (likely glucocorticoids and possibly IVIG, although treatment regimen is not detailed in the available labs). Most distinctive finding: dual myositis-specific antibody positivity — anti-NXP2 AND anti-HMGCR — despite normal creatine kinase. This combination is unusual and demands explanation: anti-NXP2 dermatomyositis (associated with calcinosis and 15–30% adult paraneoplastic risk), anti-HMGCR immune-mediated necrotising myopathy (often statin-triggered, CK can normalise rapidly with treatment), or co-existing dual immunology in an overlap presentation. Standard EULAR/ACR 2017 IIM classification thresholds are likely met given the autoantibody data even with currently normal CK.`,
   },
 ];
 

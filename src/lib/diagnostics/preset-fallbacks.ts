@@ -46,6 +46,12 @@ function detectPreset(text: string): DemoPresetId | null {
     t.includes("ana")
   )
     return "undifferentiated-ctd";
+  if (
+    t.includes("anti-nxp2") &&
+    t.includes("anti-hmgcr") &&
+    (t.includes("positive") || t.includes("post"))
+  )
+    return "iim-double-msa";
   return null;
 }
 
@@ -61,6 +67,8 @@ export function tryPresetFallback(text: string): SynthesiseResponse | null {
       return igg4Fallback();
     case "undifferentiated-ctd":
       return undifferentiatedFallback();
+    case "iim-double-msa":
+      return iimDoubleMsaFallback();
   }
 }
 
@@ -358,6 +366,177 @@ function igg4Fallback(): SynthesiseResponse {
     source: "deterministic-fallback",
     warnings: [
       "Demo preset (deterministic). Add ANTHROPIC_API_KEY to .env.local for live Opus 4.7 reasoning over your own cases.",
+    ],
+  };
+}
+
+function iimDoubleMsaFallback(): SynthesiseResponse {
+  const iim = findCriteria("eular-acr-iim-2017")!;
+  const igg4 = findCriteria("acr-eular-igg4rd-2019")!;
+  const sle = findCriteria("acr-eular-sle-2019")!;
+
+  const differentials: DifferentialReasoning[] = [
+    {
+      differential_id: "eular-acr-iim-2017",
+      differential_label: iim.name,
+      posterior_probability: 0.65,
+      key_evidence:
+        "Dual myositis-specific antibody positivity (anti-NXP2 AND anti-HMGCR) on a comprehensive 18-marker panel is uncommon and highly specific for idiopathic inflammatory myopathy; even with normal creatine kinase, autoantibody-supported EULAR/ACR 2017 thresholds are likely met when paired with clinical muscle features.",
+      supporting_findings: [
+        "Anti-NXP2 POSITIVE (myositis-specific)",
+        "Anti-HMGCR POSITIVE (myositis-specific)",
+        "Hyperglobulinaemia 63 g/L on admission",
+        "ESR 118 → 28 with treatment",
+        "Polyclonal pattern + reactive thrombocytosis",
+        "All other 16 MSAs/MAAs negative — high specificity",
+      ],
+      contradicting_findings: [
+        "CK normal (46 → 34) — atypical for IMNM if untreated",
+        "No documented proximal weakness in available labs",
+        "EMG / MRI / muscle biopsy not yet available",
+      ],
+      citations: [
+        {
+          title:
+            "2017 European League Against Rheumatism / American College of Rheumatology classification criteria for adult and juvenile idiopathic inflammatory myopathies",
+          authors: "Lundberg IE, Tjärnlund A, Bottai M, et al.",
+          journal: "Annals of the Rheumatic Diseases",
+          year: 2017,
+          pmid: "29079590",
+          doi: "10.1136/annrheumdis-2017-211468",
+          why_it_matters:
+            "Defines current IIM classification including autoantibody-supported pathways with specificity weighting.",
+        },
+      ],
+    },
+    {
+      differential_id: "iim-nxp2-paraneoplastic",
+      differential_label: "Anti-NXP2 dermatomyositis with paraneoplastic association",
+      posterior_probability: 0.18,
+      key_evidence:
+        "Anti-NXP2 in adults carries 15–30% risk of associated occult malignancy (especially gastrointestinal, breast, ovarian, lung). Despite normal tumour markers, comprehensive age-appropriate cancer screening (PET-CT, OGD, colonoscopy) is mandatory before this is excluded.",
+      supporting_findings: [
+        "Anti-NXP2 positive",
+        "Adult-onset presentation",
+        "Hyperglobulinaemia + systemic inflammation",
+        "Age >50 (paraneoplastic risk window)",
+      ],
+      contradicting_findings: [
+        "Tumour markers AFP/CEA/CA19-9/PSA all normal",
+        "No imaging-detected mass currently",
+      ],
+      citations: [
+        {
+          title:
+            "Antinuclear matrix protein 2 autoantibodies and edema, muscle disease, and malignancy risk in dermatomyositis patients",
+          authors: "Albayda J, Pinal-Fernandez I, Huang W, et al.",
+          journal: "Arthritis Care & Research",
+          year: 2017,
+          pmid: "27595833",
+          doi: "10.1002/acr.23210",
+          why_it_matters:
+            "Establishes the magnitude of malignancy association with anti-NXP2 in adult DM.",
+        },
+      ],
+    },
+    {
+      differential_id: "iim-hmgcr-imnm",
+      differential_label: "Anti-HMGCR immune-mediated necrotising myopathy",
+      posterior_probability: 0.10,
+      key_evidence:
+        "Anti-HMGCR is highly specific for immune-mediated necrotising myopathy (IMNM); classic CK >10× ULN is absent here, but CK can normalise rapidly with corticosteroids + IVIG. Statin exposure history is the key missing piece.",
+      supporting_findings: [
+        "Anti-HMGCR positive (highly specific)",
+        "Inflammatory pattern (hyperglobulinaemia)",
+        "Treatment response on inpatient stay",
+      ],
+      contradicting_findings: [
+        "CK normal currently (atypical baseline for IMNM)",
+        "Statin history not documented in available data",
+        "Muscle biopsy not yet available",
+      ],
+      citations: [
+        {
+          title:
+            "Autoantibodies against 3-hydroxy-3-methylglutaryl-coenzyme A reductase in patients with statin-associated autoimmune myopathy",
+          authors: "Mammen AL, Chung T, Christopher-Stine L, et al.",
+          journal: "Arthritis & Rheumatism",
+          year: 2011,
+          pmid: "21082425",
+          doi: "10.1002/art.30156",
+          why_it_matters:
+            "Original description linking anti-HMGCR antibodies to a discrete IMNM phenotype.",
+        },
+      ],
+    },
+    {
+      differential_id: "acr-eular-igg4rd-2019",
+      differential_label: igg4.name,
+      posterior_probability: 0.05,
+      key_evidence:
+        "Hyperglobulinaemia 63 g/L raises an IgG4-RD question, but no characteristic organ involvement (no salivary/lacrimal swelling, no autoimmune pancreatitis, no retroperitoneal fibrosis) and IgG4 subclass not yet measured. Low probability but cheap to exclude with IgG subclasses.",
+      supporting_findings: ["Marked hyperglobulinaemia"],
+      contradicting_findings: [
+        "No tissue IgG4-RD organ involvement",
+        "IgG subclasses not yet measured",
+        "Muscle-specific autoantibodies dominate the picture",
+      ],
+      citations: topReferences(igg4, 1),
+    },
+    {
+      differential_id: "acr-eular-sle-2019",
+      differential_label: sle.name,
+      posterior_probability: 0.02,
+      key_evidence:
+        "ANA and anti-dsDNA both negative — entry criterion for the 2019 EULAR/ACR SLE classification fails. Despite multi-system involvement, SLE is effectively excluded here.",
+      supporting_findings: ["Multi-system inflammation"],
+      contradicting_findings: [
+        "ANA negative — entry criterion fails",
+        "Anti-dsDNA negative",
+        "Complement not measured but clinical pattern not lupus",
+      ],
+      citations: topReferences(sle, 1),
+    },
+  ];
+
+  const criteria_scores: CriteriaScore[] = [
+    {
+      criteria_id: iim.id,
+      criteria_name: iim.name,
+      citation: iim.citation ?? "",
+      classification_rule: iim.classification_rule ?? "",
+      classification_status: "borderline",
+      met_count: 4,
+      total_count: flatCriterionList(iim).length,
+      criteria: flatCriterionList(iim).map((x) => {
+        const id = (x.id ?? "").toLowerCase();
+        const isMet =
+          id.includes("autoantibody") ||
+          id.includes("antibody") ||
+          id.includes("nxp2") ||
+          id.includes("hmgcr") ||
+          id.includes("age") ||
+          id.includes("dermatomyositis") ||
+          id.includes("rash");
+        return {
+          criterion_id: x.id ?? "",
+          label: x.label ?? "",
+          status: isMet ? ("met" as const) : ("unknown" as const),
+          evidence: isMet ? "Supported by available data" : undefined,
+        };
+      }),
+      references: topReferences(iim, 4),
+    },
+  ];
+
+  return {
+    narrative_summary:
+      "Adult Asian male, mid-60s, admitted to a Malaysian tertiary hospital with systemic inflammation, polyclonal hyperglobulinaemia (63 g/L on admission with A/G reversal 0.37), neutrophilic leucocytosis, anaemia of chronic disease, reactive thrombocytosis, and ESR 118 mm/hr — markedly improved by 2-week outpatient follow-up consistent with effective inpatient immunomodulatory therapy. The defining laboratory finding is dual myositis-specific antibody positivity on an 18-marker inflammatory-myopathy panel: anti-NXP2 AND anti-HMGCR, with all other MSAs/MAAs negative — an uncommon serological pattern that strongly supports an idiopathic inflammatory myopathy diagnosis even though creatine kinase is normal on both dates (46 → 34 U/L). The case requires three urgent next-step domains: (a) muscle-specific imaging and tissue (whole-body or thigh MRI with STIR, EMG, vastus lateralis biopsy) to phenotype the myopathy and confirm classification, (b) full age-appropriate occult-malignancy screen given anti-NXP2's 15–30% paraneoplastic association in adults despite normal tumour markers, and (c) statin exposure history given anti-HMGCR's strong association with statin-triggered IMNM.",
+    differentials,
+    criteria_scores,
+    source: "deterministic-fallback",
+    warnings: [
+      "Demo preset (deterministic) constructed from a real, de-identified Malaysian patient case. Add ANTHROPIC_API_KEY to .env.local for live Opus 4.7 reasoning over your own cases.",
     ],
   };
 }
