@@ -86,3 +86,4 @@ next-env.d.ts
 
 # verify script artefact (regenerated on every run)
 scripts/verify-references-report.json
+.vercel

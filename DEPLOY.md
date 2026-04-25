@@ -1,100 +1,80 @@
-# Deploy Huantuk to huantuk.tech
+# Huantuk · Deploy Notes
 
-End-to-end one-time setup. Follow once; subsequent pushes auto-deploy.
+The app is **live** at:
 
-## 1 · Push the latest code
+- 🌐 **<https://huantuk.vercel.app>** (clean alias)
+- 🌐 https://huantuk-8xktq8b1g-ecs-projects-e460d7b8.vercel.app (immutable production URL)
 
-Already done if you're reading this in the repo. Verify:
+## Demo preset URLs (auto-load + auto-run, zero API spend)
+
+These work without `ANTHROPIC_API_KEY` set, using deterministic fallbacks. Shareable on WhatsApp, Twitter, clinical groups:
+
+| URL | What it shows |
+|---|---|
+| <https://huantuk.vercel.app/?case=aosd> | Adult-Onset Still's Disease pattern · Yamaguchi criteria scoring · IL-1 / IL-6 / JAK repurposing |
+| <https://huantuk.vercel.app/?case=lupus-refractory> | Class IV lupus nephritis failing HCQ + MMF + cyclophosphamide · anifrolumab/belimumab/voclosporin |
+| <https://huantuk.vercel.app/?case=igg4rd> | Multi-organ IgG4-RD · rituximab + inebilizumab (MITIGATE Phase 3) |
+| <https://huantuk.vercel.app/?case=undifferentiated-ctd> | 4 years, 6 specialists, no diagnosis — the canonical Huantuk pain point |
+
+## Adding ANTHROPIC_API_KEY for live Opus 4.7 reasoning
+
+Without this, the deployed site uses deterministic fallbacks (still works, demo-quality). With it, every button does live Opus 4.7 reasoning on whatever case the user uploads.
+
+1. Get a key at <https://console.anthropic.com/settings/keys> (sign in with the same account as claude.ai). New accounts get $5 free credit, enough for 15–50 case runs.
+2. Open the Huantuk project on Vercel: <https://vercel.com/ecs-projects-e460d7b8/huantuk/settings/environment-variables>
+3. Click **Add New** → Name: `ANTHROPIC_API_KEY` → Value: `sk-ant-…` → Environments: tick all three (Production, Preview, Development) → **Save**.
+4. Trigger a redeploy: Deployments tab → latest deployment → **⋯ → Redeploy**.
+
+Once redeployed, the `MOCK-UP` banners on Drug Discovery cards disappear — every button hits Opus 4.7 directly.
+
+## Rebuilding from local edits
 
 ```bash
 cd ~/huantuk
-git status
-git log --oneline -5
+# edit code...
+git add -A
+git commit -m "your message"
+git push origin main
+# Vercel auto-deploys on push to main? -> No — repo isn't connected.
+# To deploy:
+export VERCEL_TOKEN=$(grep -E '^VERCEL_TOKEN=' ~/minda/.env | head -1 | cut -d'=' -f2-)
+npx --yes vercel@latest --prod --yes --token=$VERCEL_TOKEN
 ```
 
-If anything's uncommitted, commit + push to `RC24bc/huantuk` main first.
+(Or ask Botty in chat — Botty has the token and runs the deploy command for you.)
 
-## 2 · Connect to Vercel
+## Connecting GitHub for auto-deploys (optional, recommended)
 
-1. Go to <https://vercel.com/new>.
-2. Sign in with the GitHub account that owns `RC24bc/huantuk` (your `RC24bc` account).
-3. Click **Import** next to `RC24bc/huantuk`.
-4. **Framework preset**: Next.js (auto-detected). Leave defaults.
-5. **Environment variables** — add ONE:
-   - Name: `ANTHROPIC_API_KEY`
-   - Value: your Anthropic Console key (`sk-ant-…`). Get one at <https://console.anthropic.com/settings/keys>.
-   - Scope: Production, Preview, Development (all three).
-6. Click **Deploy**. First build takes ~2 minutes.
+Linking the repo means every `git push` to `main` auto-deploys. Right now it's manual.
 
-You'll get a default URL like `huantuk-rc24bc.vercel.app`. Test it works before adding the custom domain.
+1. Open <https://vercel.com/ecs-projects-e460d7b8/huantuk/settings/git>
+2. Click **Connect Git Repository** → GitHub → select `RC24bc/huantuk`.
+3. (You may need to install the Vercel GitHub App on the RC24bc account first — Vercel walks you through it.)
+4. After connecting, every push to `main` triggers a new production deploy automatically.
 
-## 3 · Point huantuk.tech at Vercel
+## Custom domain (deferred)
 
-In the Vercel dashboard for the `huantuk` project:
+`huantuk.tech` is registered but parking — current MVP uses the free Vercel domain. To activate later: Vercel project Settings → Domains → Add `huantuk.tech` → set the DNS records Vercel shows you at the registrar.
 
-1. **Settings → Domains → Add** → enter `huantuk.tech` → **Add**.
-2. Vercel will display the DNS records you need to set at the **registrar where you bought huantuk.tech**. They will be either:
+## Local dev (uncle's PDFs / private data)
 
-### Option A · You're using the registrar's nameservers
-
-Add these two records at your registrar's DNS panel:
-
-| Type    | Name | Value                  | TTL   |
-|---------|------|------------------------|-------|
-| `A`     | `@`  | `76.76.21.21`          | Auto  |
-| `CNAME` | `www`| `cname.vercel-dns.com.`| Auto  |
-
-### Option B · You moved nameservers to Vercel
-
-Set the registrar's nameservers to:
-
-```
-ns1.vercel-dns.com
-ns2.vercel-dns.com
-```
-
-Vercel will then handle all DNS automatically.
-
-> Whichever option Vercel asks for is shown in the Domains tab — copy from there to be safe.
-
-## 4 · Wait for SSL
-
-Vercel auto-provisions a Let's Encrypt SSL certificate once DNS propagates (1 minute – 48 hours, usually <10 minutes). The domain card in Settings → Domains shows the status.
-
-When it goes green, <https://huantuk.tech> serves the app.
-
-## 5 · Test Drug Discovery live
-
-1. Visit <https://huantuk.tech>.
-2. Click **Load demo case**.
-3. Wait for the differentials to populate (10–30 seconds — Opus 4.7 reasoning).
-4. Scroll to **Personalized Drug Discovery** at the bottom.
-5. Click each of the three buttons. With your API key set, the **MOCK-UP** banner should NOT appear — results say "Source: Opus 4.7 — …PhD agent".
-
-If you see "MOCK-UP" still, the env var didn't take effect. Re-deploy from Vercel UI (Deployments → … → Redeploy).
-
-## 6 · For private-data testing (uncle's case)
-
-The repo's `.gitignore` blocks `files/` and `raw-files/` — uncle's real reports must NEVER be committed. To test on real data:
+Real medical records are never committed (gitignored). To test on real PDFs:
 
 ```bash
 cd ~/huantuk
 mkdir -p files
-# copy uncle's PDFs into ./files/ (or any path under .gitignored dirs)
+# copy PDFs into ./files/
+cp .env.example .env.local
+# add ANTHROPIC_API_KEY=sk-ant-... to .env.local
+npm install
 npm run dev
 ```
 
-Then drop them through the dropzone on `localhost:3000`. They go to Anthropic's API for parsing (TLS in transit) but are not persisted server-side and not committed to git.
+Open <http://localhost:3000>, drop the PDFs through the dropzone. They go to Anthropic's API for parsing (TLS in transit) but are not persisted server-side and not committed to git.
 
-## What credentials I need from you to do more
+## Project IDs (for ops)
 
-If you'd like me to handle deploy + DNS automatically end-to-end:
-
-| Task | I need |
-|---|---|
-| Push code | Already done — your GitHub access via `gh` CLI is set up |
-| Vercel deploy via CLI | A Vercel access token from <https://vercel.com/account/tokens> — pass it as `VERCEL_TOKEN` in `~/minda/.env`, plus tell me which Vercel team/scope owns the project |
-| DNS records | Tell me where huantuk.tech is registered (Cloudflare? Namecheap? GoDaddy? exabytes? Hostinger?). If Cloudflare, an API token with Zone:DNS:Edit on huantuk.tech is the minimum permission. |
-| Anthropic API key | Already noted — you'll add via Vercel UI when you have one |
-
-If you're happy doing the Vercel+DNS click-through yourself, sections 1–5 above are everything you need.
+- Vercel scope: `ecs-projects-e460d7b8`
+- Vercel project: `huantuk`
+- Project URL: <https://vercel.com/ecs-projects-e460d7b8/huantuk>
+- Token: stored in `~/minda/.env` as `VERCEL_TOKEN` (mode 600, not in any git repo)
