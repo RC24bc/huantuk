@@ -1,0 +1,426 @@
+{
+  "schema_version": "1.0.0",
+  "differentials_index": {
+    "yamaguchi-1992": "Adult-Onset Still's Disease (AOSD)",
+    "eular-acr-iim-2017": "Idiopathic Inflammatory Myopathies (IIM)",
+    "acr-eular-sle-2019": "Systemic Lupus Erythematosus (SLE)",
+    "acr-eular-ra-2010": "Rheumatoid Arthritis (RA)",
+    "acr-eular-aav-2022": "ANCA-Associated Vasculitis (GPA/MPA/EGPA)",
+    "acr-eular-igg4rd-2019": "IgG4-Related Disease",
+    "acr-eular-sjogren-2016": "Primary Sjögren's Syndrome",
+    "vexas-2020": "VEXAS Syndrome (UBA1 somatic; adult inflammatory mimic)"
+  },
+  "tiers": {
+    "tier_1_local": "Available in Klang Valley, days–weeks turnaround, RM <2k typical",
+    "tier_2_regional": "Send-out to Singapore / regional, weeks turnaround, RM 2–8k",
+    "tier_3_research": "Research-only or international send-out, RM 5k+, longest turnaround"
+  },
+  "tests": [
+    {
+      "id": "extended-myositis-panel",
+      "name": "Extended myositis-specific antibody panel (Euroimmun 16-Ag)",
+      "short_name": "Extended myositis panel",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.92, "direction": "rules_in" }
+      ],
+      "triggers": ["proximal_muscle_weakness", "elevated_ck", "interstitial_lung_disease", "dermatomyositis_rash", "raynauds", "mechanics_hands"],
+      "must_not_have_done": ["anti-mda5", "anti-tif1g", "anti-nxp2", "anti-sae", "anti-hmgcr"],
+      "cost_myr_range": [800, 1500],
+      "availability": "local_kl",
+      "turnaround_days": "7–14",
+      "rationale": "Picks up anti-MDA5 (rapidly-progressive ILD risk), anti-TIF1γ (cancer-associated), anti-NXP2, anti-SAE, anti-HMGCR — none on the standard ANA-ENA. Single highest-yield rheumatology send-out for any myositis-overlap picture.",
+      "citation": "Lundberg IE et al. Ann Rheum Dis 2017 (EULAR/ACR IIM); McHugh NJ Arthritis Rheumatol 2018."
+    },
+    {
+      "id": "anti-cn1a",
+      "name": "Anti-cN-1A (NT5C1A) autoantibody",
+      "short_name": "Anti-cN-1A",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.65, "direction": "reweights" }
+      ],
+      "triggers": ["proximal_muscle_weakness", "distal_weakness", "treatment_refractory_myositis", "elevated_ck"],
+      "cost_myr_range": [400, 800],
+      "availability": "local_kl",
+      "turnaround_days": "10–21",
+      "rationale": "Inclusion Body Myositis (IBM) marker — IBM is steroid-refractory and immunosuppression often harms. Mis-classification as polymyositis is common; this single test rerouts care.",
+      "citation": "Larman HB et al. Ann Neurol 2013; Rietveld A et al. Curr Opin Rheumatol 2018."
+    },
+    {
+      "id": "glycosylated-ferritin-pct",
+      "name": "Glycosylated ferritin percentage",
+      "short_name": "Glycosylated ferritin %",
+      "category": "specialty_lab",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.88, "direction": "rules_in" }
+      ],
+      "triggers": ["hyperferritinemia", "fever_unknown_origin", "still_disease_suspected", "macrophage_activation_syndrome"],
+      "cost_myr_range": [200, 500],
+      "availability": "local_kl",
+      "turnaround_days": "5–10",
+      "rationale": "Glycosylated ferritin <20% is highly specific for AOSD and macrophage-activation syndrome. Cheap, fast, differentiates from infection/malignancy when total ferritin is high.",
+      "citation": "Fautrel B et al. Medicine 2002; Lebrun D et al. Ann Rheum Dis 2018."
+    },
+    {
+      "id": "whole-body-mri-stir",
+      "name": "Whole-body MRI (STIR / DIXON, no contrast)",
+      "short_name": "Whole-body MRI",
+      "category": "imaging",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.75, "direction": "rules_in" },
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.4, "direction": "reweights" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.5, "direction": "reweights" }
+      ],
+      "triggers": ["unexplained_pain", "muscle_weakness_subclinical", "fatigue_systemic", "negative_targeted_imaging"],
+      "cost_myr_range": [1500, 3000],
+      "availability": "local_kl",
+      "turnaround_days": "1–3",
+      "rationale": "Maps inflammation in muscle, fascia, joints, bone marrow in one pass. Picks up subclinical myositis, sacroiliitis, eosinophilic-fasciitis pattern, marrow oedema invisible on plain films.",
+      "citation": "Schalke B et al. Curr Opin Rheumatol 2016."
+    },
+    {
+      "id": "hrct-chest-ild-protocol",
+      "name": "High-resolution CT chest, ILD protocol + DLCO",
+      "short_name": "HRCT chest + DLCO",
+      "category": "imaging",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.7, "direction": "reweights" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.7, "direction": "reweights" },
+        { "differential_id": "acr-eular-igg4rd-2019", "info_gain": 0.6, "direction": "reweights" },
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.55, "direction": "reweights" }
+      ],
+      "triggers": ["dyspnea", "dry_cough", "hypoxia", "fine_crackles", "abnormal_cxr", "anti-mda5", "anti-jo1"],
+      "cost_myr_range": [800, 1500],
+      "availability": "local_kl",
+      "turnaround_days": "1–3",
+      "rationale": "NSIP / OP / UIP patterns are differential-defining. Anti-synthetase, anti-MDA5, IgG4-RD, AAV all have characteristic ILD signatures invisible on plain CXR.",
+      "citation": "Travis WD et al. AJRCCM 2013; Solomon JJ et al. Curr Opin Rheumatol 2016."
+    },
+    {
+      "id": "pet-ct-fdg-whole-body",
+      "name": "Whole-body FDG PET-CT",
+      "short_name": "FDG PET-CT",
+      "category": "imaging",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.75, "direction": "rules_in" },
+        { "differential_id": "acr-eular-igg4rd-2019", "info_gain": 0.7, "direction": "reweights" },
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.5, "direction": "reweights" },
+        { "differential_id": "vexas-2020", "info_gain": 0.4, "direction": "reweights" }
+      ],
+      "triggers": ["fever_unknown_origin", "unexplained_inflammation", "elevated_esr_crp_no_source", "weight_loss_systemic"],
+      "cost_myr_range": [4000, 6000],
+      "availability": "local_kl",
+      "turnaround_days": "3–7",
+      "rationale": "Single highest-yield 'find-the-inflammation' scan when conventional imaging is unrevealing. Vessel-wall uptake → large-vessel vasculitis; lymph-node uptake → IgG4-RD vs lymphoma; muscle uptake → myositis.",
+      "citation": "Soussan M et al. J Nucl Med 2014; Schönau V et al. Ann Rheum Dis 2018."
+    },
+    {
+      "id": "anca-extended-pr3-mpo-quant",
+      "name": "ANCA with quantitative PR3 and MPO ELISA",
+      "short_name": "ANCA + PR3/MPO quant",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.95, "direction": "rules_in" }
+      ],
+      "triggers": ["sinonasal_disease", "pulmonary_renal_syndrome", "mononeuritis_multiplex", "purpura_palpable", "alveolar_hemorrhage", "rapidly_progressive_glomerulonephritis"],
+      "cost_myr_range": [400, 900],
+      "availability": "local_kl",
+      "turnaround_days": "5–10",
+      "rationale": "Distinguishes GPA (PR3) from MPA / EGPA (MPO). Quantitative ELISA also tracks disease activity. Standard-of-care first test for any vasculitis suspicion.",
+      "citation": "Robson JC et al. Ann Rheum Dis 2022 (ACR/EULAR AAV)."
+    },
+    {
+      "id": "complement-c3-c4-ch50",
+      "name": "Complement C3, C4, CH50",
+      "short_name": "C3 / C4 / CH50",
+      "category": "specialty_lab",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.8, "direction": "rules_in" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.4, "direction": "reweights" }
+      ],
+      "triggers": ["renal_disease_unexplained", "ana_positive", "purpura", "anti-dsdna_positive"],
+      "cost_myr_range": [200, 400],
+      "availability": "local_kl",
+      "turnaround_days": "3–7",
+      "rationale": "Low complement is a 2019 EULAR/ACR SLE criterion (5 points if both C3 and C4 low). CH50 zero suggests inherited complement deficiency (SLE-predisposing).",
+      "citation": "Aringer M et al. Ann Rheum Dis 2019."
+    },
+    {
+      "id": "anti-dsdna-anti-sm",
+      "name": "Anti-dsDNA (Crithidia or ELISA) + Anti-Sm",
+      "short_name": "Anti-dsDNA + Anti-Sm",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.92, "direction": "rules_in" }
+      ],
+      "triggers": ["ana_positive", "renal_disease", "rash_malar", "arthritis_serositis", "cytopenias"],
+      "cost_myr_range": [300, 700],
+      "availability": "local_kl",
+      "turnaround_days": "5–10",
+      "rationale": "Anti-dsDNA highly specific for SLE and tracks lupus nephritis activity. Anti-Sm is essentially pathognomonic when present. Both score 6 points each in 2019 EULAR/ACR SLE.",
+      "citation": "Aringer M et al. Ann Rheum Dis 2019."
+    },
+    {
+      "id": "anti-ccp-rf-quant",
+      "name": "Anti-CCP (high-titre) + Rheumatoid Factor quantitative",
+      "short_name": "Anti-CCP + RF quant",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-ra-2010", "info_gain": 0.92, "direction": "rules_in" }
+      ],
+      "triggers": ["polyarthritis_symmetric_small_joint", "morning_stiffness_prolonged", "synovitis"],
+      "cost_myr_range": [200, 500],
+      "availability": "local_kl",
+      "turnaround_days": "3–7",
+      "rationale": "High-titre anti-CCP (>3× ULN) scores 3 points in 2010 ACR/EULAR RA. Far more specific than RF alone. RF quantitative also tracks AOSD-vs-RA borderline cases.",
+      "citation": "Aletaha D et al. Ann Rheum Dis 2010."
+    },
+    {
+      "id": "ena-extended-ssa-ssb-rnp",
+      "name": "Extended ENA panel (anti-Ro/SSA, La/SSB, RNP, Scl-70, centromere)",
+      "short_name": "Extended ENA",
+      "category": "autoantibody",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.85, "direction": "rules_in" },
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.5, "direction": "reweights" }
+      ],
+      "triggers": ["dry_eyes", "dry_mouth", "parotid_swelling", "ana_positive", "neonatal_lupus_history"],
+      "cost_myr_range": [400, 900],
+      "availability": "local_kl",
+      "turnaround_days": "5–10",
+      "rationale": "Anti-Ro/SSA scores 3 points in 2016 ACR/EULAR Sjögren's. Anti-La rarely positive without anti-Ro. Mixed-CTD if anti-RNP dominant; scleroderma-overlap if Scl-70 / centromere.",
+      "citation": "Shiboski CH et al. Ann Rheum Dis 2017."
+    },
+    {
+      "id": "lip-biopsy-focus-score",
+      "name": "Minor salivary gland (lip) biopsy with focus score",
+      "short_name": "Lip biopsy",
+      "category": "biopsy",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.9, "direction": "rules_in" }
+      ],
+      "triggers": ["dry_mouth_objective", "dry_eyes_schirmer_positive", "anti-ssa_negative_but_clinical_sjogren"],
+      "cost_myr_range": [1500, 3000],
+      "availability": "local_kl",
+      "turnaround_days": "7–14",
+      "rationale": "Focus score ≥1 (lymphocytic infiltrate per 4mm²) scores 3 points in 2016 ACR/EULAR Sjögren's. Necessary in seronegative-but-clinical Sjögren's.",
+      "citation": "Shiboski CH et al. Ann Rheum Dis 2017; Daniels TE et al. Arthritis Rheum 2011."
+    },
+    {
+      "id": "schirmer-tear-osmolarity",
+      "name": "Schirmer test + tear osmolarity + ocular surface staining",
+      "short_name": "Schirmer + ocular staining",
+      "category": "specialty_clinical",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.6, "direction": "rules_in" }
+      ],
+      "triggers": ["dry_eyes_subjective", "burning_eyes", "photophobia"],
+      "cost_myr_range": [200, 500],
+      "availability": "local_kl",
+      "turnaround_days": "1",
+      "rationale": "Schirmer ≤5mm/5min and ocular staining score ≥5 each contribute to 2016 ACR/EULAR Sjögren's. Easy ophthalmology referral.",
+      "citation": "Shiboski CH et al. Ann Rheum Dis 2017."
+    },
+    {
+      "id": "igg-subclasses",
+      "name": "IgG subclasses 1–4 (with IgG4 quantitation)",
+      "short_name": "IgG subclasses + IgG4",
+      "category": "specialty_lab",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-igg4rd-2019", "info_gain": 0.85, "direction": "rules_in" }
+      ],
+      "triggers": ["organ_swelling_unexplained", "lacrimal_or_salivary_gland_enlargement", "pancreatitis_autoimmune", "retroperitoneal_fibrosis", "lymphadenopathy_persistent"],
+      "cost_myr_range": [400, 900],
+      "availability": "local_kl",
+      "turnaround_days": "5–10",
+      "rationale": "Serum IgG4 >135 mg/dL (or IgG4/total IgG >8%) is a major entry criterion for 2019 ACR/EULAR IgG4-RD. Also helps rule out IgG4 mimics (Castleman, hyper-IL-6 states).",
+      "citation": "Wallace ZS et al. Ann Rheum Dis 2020."
+    },
+    {
+      "id": "tissue-biopsy-igg4-stain",
+      "name": "Target-organ biopsy with IgG4+ plasma cell IHC",
+      "short_name": "Tissue biopsy + IgG4 IHC",
+      "category": "biopsy",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "acr-eular-igg4rd-2019", "info_gain": 0.95, "direction": "rules_in" }
+      ],
+      "triggers": ["accessible_organ_swelling", "elevated_igg4", "imaging_typical_igg4_pattern"],
+      "cost_myr_range": [2000, 4000],
+      "availability": "local_kl",
+      "turnaround_days": "10–21",
+      "rationale": "Storiform fibrosis + obliterative phlebitis + IgG4+/IgG ratio >40% is the histopathologic gold standard for IgG4-RD. Differentiates from lymphoma and other mimics.",
+      "citation": "Deshpande V et al. Mod Pathol 2012; Wallace ZS et al. Ann Rheum Dis 2020."
+    },
+    {
+      "id": "bm-biopsy-vacuolated-precursors",
+      "name": "Bone marrow biopsy with vacuolated myeloid precursor scoring",
+      "short_name": "BM biopsy (VEXAS protocol)",
+      "category": "biopsy",
+      "tier": "tier_1_local",
+      "discriminates": [
+        { "differential_id": "vexas-2020", "info_gain": 0.85, "direction": "rules_in" }
+      ],
+      "triggers": ["adult_male_over_50", "refractory_inflammation", "macrocytic_anemia", "chondritis", "neutrophilic_dermatosis", "unexplained_cytopenias"],
+      "cost_myr_range": [1500, 3000],
+      "availability": "local_kl",
+      "turnaround_days": "7–14",
+      "rationale": "Vacuolated myeloid and erythroid precursors are pathognomonic for VEXAS. With UBA1 sequencing, completes the diagnosis. Reframes 'refractory autoimmune' as a haem-onc disease.",
+      "citation": "Beck DB et al. NEJM 2020;383:2628–2638."
+    },
+    {
+      "id": "karius-cfdna-pathogen",
+      "name": "Karius cell-free pathogen DNA sequencing",
+      "short_name": "Karius cfDNA",
+      "category": "microbial",
+      "tier": "tier_2_regional",
+      "discriminates": [
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.5, "direction": "rules_out_mimic" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.4, "direction": "rules_out_mimic" }
+      ],
+      "triggers": ["fever_unknown_origin", "atypical_presentation_concerning_for_infection", "immunocompromised_host", "occult_endocarditis_suspected"],
+      "cost_myr_range": [4500, 6500],
+      "availability": "international_sendout",
+      "turnaround_days": "3–5",
+      "rationale": "Sequences cell-free DNA from >1000 bacteria, fungi, viruses, parasites in a single blood draw. Rules out occult Bartonella, Coxiella, Whipple's, atypical mycobacteria — all mimic adult inflammatory disease.",
+      "citation": "Blauwkamp TA et al. Nat Microbiol 2019."
+    },
+    {
+      "id": "uba1-targeted-deep-sequencing",
+      "name": "Targeted UBA1 deep sequencing (somatic mosaic, ≥1000× depth)",
+      "short_name": "UBA1 sequencing (VEXAS)",
+      "category": "genetic",
+      "tier": "tier_2_regional",
+      "discriminates": [
+        { "differential_id": "vexas-2020", "info_gain": 0.98, "direction": "rules_in" }
+      ],
+      "triggers": ["adult_male_over_50", "refractory_inflammation", "vacuolated_myeloid_precursors", "chondritis_relapsing", "macrocytic_anemia", "neutrophilic_dermatosis"],
+      "cost_myr_range": [2000, 4000],
+      "availability": "regional_singapore",
+      "turnaround_days": "14–28",
+      "rationale": "Single test that REFRAMES the diagnosis. UBA1 p.Met41 somatic mutation defines VEXAS. Standard panels miss it (mosaic in myeloid lineage); needs deep sequencing of blood DNA. Treatment changes completely (azacitidine, JAKi, allo-HSCT).",
+      "citation": "Beck DB et al. NEJM 2020;383:2628–2638."
+    },
+    {
+      "id": "phipseq-autoantibody-discovery",
+      "name": "PhIP-Seq genome-wide autoantibody discovery (T7 phage display)",
+      "short_name": "PhIP-Seq",
+      "category": "autoantibody",
+      "tier": "tier_3_research",
+      "discriminates": [
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.7, "direction": "reweights" },
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.5, "direction": "reweights" },
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.5, "direction": "reweights" }
+      ],
+      "triggers": ["seronegative_clinical_autoimmunity", "all_standard_panels_negative", "atypical_phenotype", "paraneoplastic_concern"],
+      "cost_myr_range": [4000, 8000],
+      "availability": "international_sendout",
+      "turnaround_days": "21–42",
+      "rationale": "Probes the entire human proteome for autoantibodies — finds antibodies not on any commercial panel. Has reframed autoimmune encephalitis, paraneoplastic syndromes, and seronegative myositis cases. The 'Hail Mary' for genuinely unexplained autoimmunity.",
+      "citation": "Vazquez SE et al. Cell 2022; Mandel-Brehm C et al. NEJM 2019."
+    },
+    {
+      "id": "blood-rnaseq-ifn-signature",
+      "name": "Whole-blood RNA-seq with type-I IFN signature score",
+      "short_name": "Blood RNA-seq + IFN signature",
+      "category": "transcriptomic",
+      "tier": "tier_3_research",
+      "discriminates": [
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.75, "direction": "reweights" },
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.7, "direction": "reweights" },
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.65, "direction": "reweights" },
+        { "differential_id": "vexas-2020", "info_gain": 0.6, "direction": "reweights" },
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.55, "direction": "rules_out" }
+      ],
+      "triggers": ["overlap_phenotype", "treatment_selection_for_biologic", "ifn_responsive_disease_suspected"],
+      "cost_myr_range": [3000, 6000],
+      "availability": "regional_singapore",
+      "turnaround_days": "21–35",
+      "rationale": "IFN-high → SLE / Sjögren's / VEXAS / interferonopathy / dermatomyositis (anti-MDA5). IFN-low → AOSD / IgG4-RD / RA. Predicts response to anifrolumab (IFN-blocker) and JAK inhibitors.",
+      "citation": "El-Sherbiny YM et al. Sci Rep 2018; Rice GI et al. Lancet Neurol 2013."
+    },
+    {
+      "id": "olink-explore-3072-proteomics",
+      "name": "Olink Explore 3072 plasma proteomics panel",
+      "short_name": "Olink proteomics (3000+ proteins)",
+      "category": "proteomic",
+      "tier": "tier_3_research",
+      "discriminates": [
+        { "differential_id": "yamaguchi-1992", "info_gain": 0.6, "direction": "reweights" },
+        { "differential_id": "eular-acr-iim-2017", "info_gain": 0.6, "direction": "reweights" },
+        { "differential_id": "acr-eular-sle-2019", "info_gain": 0.55, "direction": "reweights" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.55, "direction": "reweights" }
+      ],
+      "triggers": ["all_other_workup_negative", "research_collaboration_available", "stratification_for_trial_enrollment"],
+      "cost_myr_range": [5000, 10000],
+      "availability": "international_sendout",
+      "turnaround_days": "28–60",
+      "rationale": "Quantifies 3000+ plasma proteins. Identifies inflammatory subtypes by protein signature, not symptom. UK Biobank reference data on 500k people unlocked rapid pattern matching. Best when conventional panels fail to discriminate.",
+      "citation": "Sun BB et al. Nature 2023; Eldjarn GH et al. Nature 2023."
+    },
+    {
+      "id": "pharmacogenomic-panel-mma",
+      "name": "Pharmacogenomic panel (HLA-B*58:01 + NUDT15 + TPMT + HLA-B*15:02)",
+      "short_name": "Pharmacogenomic safety panel",
+      "category": "genetic",
+      "tier": "tier_1_local",
+      "discriminates": [],
+      "purpose": "treatment_safety",
+      "triggers": ["azathioprine_planned", "6mp_planned", "allopurinol_planned", "carbamazepine_planned", "any_immunosuppressant_planned"],
+      "cost_myr_range": [500, 1200],
+      "availability": "local_kl",
+      "turnaround_days": "7–14",
+      "rationale": "NUDT15 c.415C>T (~10% East Asian carriers) → severe azathioprine myelosuppression. HLA-B*58:01 (~10% Chinese/Malay) → 580× allopurinol SJS/TEN risk. Standard of care in Malaysia before any thiopurine or allopurinol.",
+      "citation": "Hung S-I et al. PNAS 2005; Yang J-J et al. JAMA 2014; CPIC guidelines 2018."
+    },
+    {
+      "id": "tcr-bcr-repertoire-sequencing",
+      "name": "TCR-β + BCR repertoire deep sequencing",
+      "short_name": "TCR/BCR repertoire",
+      "category": "immunologic",
+      "tier": "tier_3_research",
+      "discriminates": [
+        { "differential_id": "vexas-2020", "info_gain": 0.4, "direction": "reweights" },
+        { "differential_id": "acr-eular-sjogren-2016", "info_gain": 0.45, "direction": "reweights" }
+      ],
+      "triggers": ["monoclonal_gammopathy_concern", "lymphoma_vs_autoimmune", "post_viral_autoimmune"],
+      "cost_myr_range": [4000, 7000],
+      "availability": "international_sendout",
+      "turnaround_days": "21–42",
+      "rationale": "Detects oligoclonal expansions suggesting evolving lymphoma vs. polyclonal autoimmune. CMV/EBV exposure history readable. Plasmablast clones predict Sjögren's lymphoma transformation risk.",
+      "citation": "Robins HS et al. Sci Transl Med 2010; Carlson CS et al. Nat Commun 2013."
+    },
+    {
+      "id": "pet-fapi-fibroblast",
+      "name": "PET with fibroblast activation protein inhibitor (FAPI) tracer",
+      "short_name": "PET-FAPI",
+      "category": "imaging",
+      "tier": "tier_2_regional",
+      "discriminates": [
+        { "differential_id": "acr-eular-igg4rd-2019", "info_gain": 0.85, "direction": "rules_in" },
+        { "differential_id": "acr-eular-aav-2022", "info_gain": 0.6, "direction": "reweights" }
+      ],
+      "triggers": ["fibrosing_disease_suspected", "fdg_pet_equivocal", "retroperitoneal_fibrosis", "treatment_response_monitoring"],
+      "cost_myr_range": [6000, 9000],
+      "availability": "regional_singapore",
+      "turnaround_days": "7–14",
+      "rationale": "5–10× more sensitive than FDG-PET for fibrosing diseases. Rapidly becoming imaging-of-choice for IgG4-RD, large-vessel vasculitis, fibrosing pneumonitis. Available at NCC Singapore.",
+      "citation": "Schmidkonz C et al. Eur J Nucl Med Mol Imaging 2020; Luo Y et al. Eur J Nucl Med 2021."
+    }
+  ]
+}

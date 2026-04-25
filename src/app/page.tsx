@@ -1,4 +1,4 @@
-import DropZone from "@/components/DropZone";
+import PatientAtlasShell from "@/components/PatientAtlasShell";
 
 export default function Home() {
   return (
@@ -31,7 +31,7 @@ export default function Home() {
           </p>
         </section>
 
-        <DropZone />
+        <PatientAtlasShell />
 
         <section className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
           <Feature
@@ -43,8 +43,8 @@ export default function Home() {
             body="Met / unmet / unknown against each of seven published classification criteria sets."
           />
           <Feature
-            title="Honest re-weighting"
-            body="The differential shifts visibly as new labs arrive; we flag the single next test with highest information gain."
+            title="What's missing"
+            body="Opus 4.7 ranks the next 5 tests with the highest information gain — so doctors order the test that actually moves the diagnosis."
           />
         </section>
 

@@ -2,52 +2,86 @@
 
 import { useCallback, useRef, useState } from "react";
 
-type ExtractedDoc = {
+export type ExtractedDoc = {
   filename: string;
   status: "pending" | "extracting" | "done" | "error";
   error?: string;
   summary?: string;
+  extracted?: unknown;
 };
 
-export default function DropZone() {
+type Props = {
+  onDocsChange?: (docs: ExtractedDoc[]) => void;
+};
+
+export default function DropZone({ onDocsChange }: Props) {
   const [docs, setDocs] = useState<ExtractedDoc[]>([]);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFiles = useCallback(async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    const list: ExtractedDoc[] = Array.from(files).map((f) => ({
-      filename: f.name,
-      status: "pending",
-    }));
-    setDocs((prev) => [...prev, ...list]);
+  const update = useCallback(
+    (next: ExtractedDoc[] | ((prev: ExtractedDoc[]) => ExtractedDoc[])) => {
+      setDocs((prev) => {
+        const value = typeof next === "function" ? next(prev) : next;
+        onDocsChange?.(value);
+        return value;
+      });
+    },
+    [onDocsChange],
+  );
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const idx = docs.length + i;
-      setDocs((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "extracting" } : d)));
-      try {
-        const form = new FormData();
-        form.append("file", file);
-        const res = await fetch("/api/ingest", { method: "POST", body: form });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
-        setDocs((prev) =>
-          prev.map((d, j) => (j === idx ? { ...d, status: "done", summary: json.summary } : d))
-        );
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        setDocs((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "error", error: msg } : d)));
+  const handleFiles = useCallback(
+    async (files: FileList | null) => {
+      if (!files || files.length === 0) return;
+      const incoming: ExtractedDoc[] = Array.from(files).map((f) => ({
+        filename: f.name,
+        status: "pending",
+      }));
+      let baseLen = 0;
+      update((prev) => {
+        baseLen = prev.length;
+        return [...prev, ...incoming];
+      });
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const idx = baseLen + i;
+        update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "extracting" } : d)));
+        try {
+          const form = new FormData();
+          form.append("file", file);
+          const res = await fetch("/api/ingest", { method: "POST", body: form });
+          const json = await res.json();
+          if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+          update((prev) =>
+            prev.map((d, j) =>
+              j === idx
+                ? { ...d, status: "done", summary: json.summary, extracted: json.extracted }
+                : d,
+            ),
+          );
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : String(err);
+          update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "error", error: msg } : d)));
+        }
       }
-    }
-  }, [docs.length]);
+    },
+    [update],
+  );
 
   return (
     <div>
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
         onDragLeave={() => setDragging(false)}
-        onDrop={(e) => { e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files); }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          handleFiles(e.dataTransfer.files);
+        }}
         onClick={() => inputRef.current?.click()}
         className={
           "rounded-xl border-2 border-dashed p-10 text-center cursor-pointer transition-colors " +
