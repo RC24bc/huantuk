@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
     const client = new Anthropic({ apiKey });
     const res = await client.messages.create({
       model: MODEL,
-      max_tokens: 4000,
+      max_tokens: 16000,
       system: SYSTEM,
       messages: [
         {
@@ -123,7 +123,9 @@ export async function POST(req: NextRequest) {
           differentials: [],
           criteria_scores: [],
           source: "opus-4.7" as const,
-          warnings: ["Failed to parse Opus JSON output."],
+          warnings: [
+            `Failed to parse Opus JSON output. stop_reason=${res.stop_reason ?? "unknown"} raw_len=${raw.length} preview=${raw.slice(0, 400)}`,
+          ],
         } satisfies SynthesiseResponse,
       );
     }
