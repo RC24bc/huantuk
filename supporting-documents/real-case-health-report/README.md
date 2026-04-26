@@ -1,32 +1,52 @@
 # Real Case Health Reports — Test Inputs for Judges
 
-These are **redacted lab reports from a real clinical case** the Huantuk team has been working with — an inflammatory myopathy (IIM) workup at a Malaysian hospital.
+A complete real-world test case: **50 redacted health reports** from a real
+inflammatory myopathy (IIM) patient at three different Malaysian healthcare
+providers. Use these to exercise Huantuk end-to-end.
 
 ## How to use
 
 1. Open the live app: <https://huantuk.vercel.app>
-2. Drop any (or all) of the JPEGs in this folder onto the dropzone, or click the upload button.
-3. Watch Huantuk extract findings, rank differentials, score classification criteria, and suggest next tests — with citations.
+2. Drop one or more files from `pdfs/` or `images/` onto the dropzone (or click upload).
+3. Watch Huantuk extract findings, rank differentials, score classification criteria,
+   suggest next tests, and (if you continue to drug discovery) propose repurposed
+   drugs / off-label options / clinical trials — all with citations.
 
 ## What's in this set
 
-Two collection dates from the same patient — admission workup and a 2-week follow-up:
+```
+pdfs/    11 PDFs   — typeset lab reports (full multi-page panels)
+images/  39 JPEGs  — phone photos of additional reports
+```
 
-| # | File | Date | Panel |
-|---|------|------|-------|
-| 01 | `01-lab-fbc-esr-cpk-2026-04-22-page1of4.jpeg` | 2026-04-22 | Full Blood Count + ESR + Creatine Kinase |
-| 02 | `02-lab-admission-fbc-2026-04-07-page1of7.jpeg` | 2026-04-07 | Admission FBC |
-| 03 | `03-lab-lft-2026-04-22-page2of4.jpeg` | 2026-04-22 | Liver Function Test |
-| 04 | `04-lab-admission-lft-fib4-2026-04-07-page2of7.jpeg` | 2026-04-07 | LFT + FIB-4 fibrosis score |
-| 05 | `05-lab-renal-glucose-2026-04-22-page3of4.jpeg` | 2026-04-22 | Renal Function + Glucose |
-| 06 | `06-lab-admission-renal-glucose-2026-04-07-page3of7.jpeg` | 2026-04-07 | Renal Function + Glucose |
-| 07 | `07-lab-renal-glucose-2026-04-22-page3of4-rescan.jpeg` | 2026-04-22 | Renal Function (duplicate scan) |
-| 08 | `08-lab-calcium-phosphate-cholesterol-2026-04-22-page4of4.jpeg` | 2026-04-22 | Calcium / Phosphate / Cholesterol |
-| 09 | `09-lab-iim-myositis-18ag-panel-2026-04-07-page6of7.jpeg` | 2026-04-07 | **18-marker Myositis Autoimmune Panel** |
-| 10 | `10-lab-feme-tumour-markers-2026-04-07-page7of7.jpeg` | 2026-04-07 | Urine FEME + CA 19-9 + PSA |
+### `pdfs/` (11 files, 81 pages total)
 
-Image #9 is the diagnostic pivot — anti-NXP2 and anti-HMGCR positivity drove the IIM differential.
+Multi-page lab reports from three providers across the patient's diagnostic journey:
+
+| File | Source | Pages | Notes |
+|---|---|---|---|
+| 01–03 | Hospital A — Pantai Hospital Ipoh | 29 | Discharge summary + admission labs (Apr 7–10) |
+| 04–08 | Hospital B — KPJ | 33 | Tumour markers, hepatitis/syphilis, urinalysis |
+| 09–11 | Third lab — Pathlab | 19 | Myositis 18-AG panel, skin biopsy |
+
+The myositis panel inside `09-third-lab-report-1.pdf` is the diagnostic pivot — anti-NXP2 and anti-HMGCR positivity drove the IIM differential.
+
+### `images/` (39 files)
+
+Phone snapshots of supporting reports the patient brought in:
+- `01–29-photo-2026-04-15.jpeg` — admission-week photos (echocardiogram, bone marrow aspiration, microbiology cultures, fluid analyses)
+- `30–39-photo-2026-04-25.jpeg` — 2-week follow-up bloods (FBC + LFT + RFT + IIM panel + urine FEME)
 
 ## Privacy
 
-Patient name, IC, date of birth, MRN, lab number, barcode, and treating-clinician name have all been blackout-redacted. Only de-identified clinical content remains. The hospital footer (institutional address) is preserved as context.
+Patient name, IC, date of birth, MRN, lab numbers, barcode, and treating-clinician names have all been blackout-redacted. PDFs were redacted via text-search redaction (PyMuPDF) — the underlying glyphs are erased, not just visually covered. JPEGs were redacted via OCR-anchored visual blackout. Only de-identified clinical content remains.
+
+A pre-commit `.githooks/pre-commit` PII guardrail blocks any file matching identifier fingerprints, so this folder ships clean by construction.
+
+## File counts
+
+| | Files | Total pages of clinical data |
+|---|---:|---:|
+| PDFs | 11 | 81 |
+| JPEGs | 39 | 39 |
+| **Total** | **50** | **120** |
