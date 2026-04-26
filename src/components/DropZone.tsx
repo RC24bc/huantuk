@@ -2,6 +2,11 @@
 
 import { useCallback, useRef, useState } from "react";
 
+// Vercel serverless functions cap request bodies at 4.5 MB. Reject above this
+// before the upload starts so the user sees a useful message instead of the
+// platform's plain-text 413, which crashes res.json() with "Unexpected token 'R'".
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024 + 256 * 1024; // 4.25 MB safety margin under Vercel's 4.5 MB limit
+
 export type ExtractedDoc = {
   filename: string;
   status: "pending" | "extracting" | "done" | "error";
@@ -9,6 +14,28 @@ export type ExtractedDoc = {
   summary?: string;
   extracted?: unknown;
 };
+
+function formatMb(bytes: number): string {
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+async function parseIngestResponse(res: Response): Promise<{ ok: true; data: { summary?: string; extracted?: unknown } } | { ok: false; error: string }> {
+  const text = await res.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    if (res.status === 413 || /too large|payload|request body/i.test(text)) {
+      return { ok: false, error: "PDF exceeds Vercel's 4.5 MB upload limit. Split or compress the file and try again." };
+    }
+    return { ok: false, error: `Server returned ${res.status} ${res.statusText || ""}`.trim() };
+  }
+  if (!res.ok) {
+    const msg = data && typeof data === "object" && "error" in data ? String((data as { error: unknown }).error) : `HTTP ${res.status}`;
+    return { ok: false, error: msg };
+  }
+  return { ok: true, data: (data ?? {}) as { summary?: string; extracted?: unknown } };
+}
 
 type Props = {
   onDocsChange?: (docs: ExtractedDoc[]) => void;
@@ -46,17 +73,33 @@ export default function DropZone({ onDocsChange }: Props) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const idx = baseLen + i;
+
+        if (file.size > MAX_UPLOAD_BYTES) {
+          update((prev) =>
+            prev.map((d, j) =>
+              j === idx
+                ? {
+                    ...d,
+                    status: "error",
+                    error: `File is ${formatMb(file.size)} — exceeds Vercel's 4.5 MB upload limit. Split into smaller PDFs (e.g. one per visit) or compress and retry.`,
+                  }
+                : d,
+            ),
+          );
+          continue;
+        }
+
         update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "extracting" } : d)));
         try {
           const form = new FormData();
           form.append("file", file);
           const res = await fetch("/api/ingest", { method: "POST", body: form });
-          const json = await res.json();
-          if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+          const parsed = await parseIngestResponse(res);
+          if (!parsed.ok) throw new Error(parsed.error);
           update((prev) =>
             prev.map((d, j) =>
               j === idx
-                ? { ...d, status: "done", summary: json.summary, extracted: json.extracted }
+                ? { ...d, status: "done", summary: parsed.data.summary, extracted: parsed.data.extracted }
                 : d,
             ),
           );
@@ -109,7 +152,7 @@ export default function DropZone({ onDocsChange }: Props) {
             We couldn&apos;t read one or more of those files.
           </p>
           <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-            Specific errors are shown next to each file below. If every file is failing with the same message, the server is likely missing an API key — let your operator know.
+            Specific errors are shown next to each file below. PDFs larger than 4.5 MB exceed the upload limit — split them (one visit / one report per file) or compress and retry. If every file is failing with the same backend error, the server is likely missing an API key — let your operator know.
           </p>
         </div>
       )}
