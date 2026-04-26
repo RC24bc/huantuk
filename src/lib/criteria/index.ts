@@ -26,7 +26,12 @@ export type CriteriaFile = {
   major?: LooseCriterion[];
   minor?: LooseCriterion[];
   exclusions?: LooseCriterion[];
-  domains?: Array<{ name?: string; criteria?: LooseCriterion[] }>;
+  // Two valid shapes in the wild:
+  //   array form:  [{ name, criteria: [...] }, ...]
+  //   object form: { joint_involvement: [...], serology: [...], ... }
+  domains?:
+    | Array<{ name?: string; criteria?: LooseCriterion[] }>
+    | Record<string, LooseCriterion[]>;
   criteria?: LooseCriterion[];
   references?: CriteriaReference[];
 };
@@ -55,7 +60,13 @@ export function flatCriterionList(c: CriteriaFile): LooseCriterion[] {
   if (c.minor) list.push(...c.minor);
   if (c.criteria) list.push(...c.criteria);
   if (c.domains) {
-    for (const d of c.domains) {
+    const arr: Array<{ name?: string; criteria?: LooseCriterion[] }> = Array.isArray(c.domains)
+      ? c.domains
+      : Object.entries(c.domains as Record<string, unknown>).map(([name, value]) => ({
+          name,
+          criteria: Array.isArray(value) ? (value as LooseCriterion[]) : [],
+        }));
+    for (const d of arr) {
       if (d.criteria) list.push(...d.criteria);
     }
   }
