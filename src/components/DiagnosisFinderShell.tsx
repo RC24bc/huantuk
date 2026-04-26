@@ -11,6 +11,7 @@ import FollowUpQuestions from "./FollowUpQuestions";
 import MultiChoiceIntake, { type MultiChoiceAnswer } from "./MultiChoiceIntake";
 import ReferralLetterCard from "./ReferralLetterCard";
 import EbmUpdatesPanel from "./EbmUpdatesPanel";
+import PhasedDiagnosisShell from "./PhasedDiagnosisShell";
 import { DEMO_PRESETS, findPreset, type DemoPresetId } from "@/lib/diagnostics/demo-presets";
 import { findScreeningBank, formatAnswersAsHistory } from "@/lib/diagnostics/screening-questions";
 import { usePersona, useCopy } from "@/lib/persona";
@@ -24,6 +25,17 @@ import type { MimicCheckResponse } from "@/lib/agents/mimic-detector";
 type Status = "idle" | "loading" | "ready" | "error";
 
 export default function DiagnosisFinderShell() {
+  const searchParams = useSearchParams();
+  // Phased real-case demo (uncle-IIM) lives in its own shell — delegate
+  // when the URL asks for it. All other ?case= presets stay on this shell.
+  if (searchParams.get("case") === "uncle-phased") {
+    return <PhasedDiagnosisShell />;
+  }
+
+  return <DiagnosisFinderShellInner />;
+}
+
+function DiagnosisFinderShellInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

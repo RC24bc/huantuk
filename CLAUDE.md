@@ -16,10 +16,17 @@ Two workflows, both in production at `huantuk.vercel.app`:
 
 - Next.js 16 + TypeScript + Tailwind 4
 - `@anthropic-ai/sdk` with Opus 4.7 (`claude-opus-4-7`)
-- Deterministic deterministic fallbacks when `ANTHROPIC_API_KEY` is unset
+- Deterministic fallbacks when `ANTHROPIC_API_KEY` is unset OR Opus call errors (401/network/rate-limit) — every demo case route survives a key outage.
 - Deployed on Vercel · public repo `RC24bc/huantuk`
 - Live demo URLs (no API key needed):
-  - `?case=aosd` · `?case=lupus-refractory` · `?case=igg4rd` · `?case=undifferentiated-ctd`
+  - `?case=aosd` · `?case=lupus-refractory` · `?case=igg4rd` · `?case=undifferentiated-ctd` · `?case=iim-double-msa`
+  - `?case=uncle-phased&phase=1` — 3-phase real-case upload simulation (admission → mid-workup → definitive). Each phase loads its own redacted PDFs from `public/demo-uncle-iim/phase{1,2,3}/`, presents 5 a/b/c/d clinical-history Qs, and routes to the matching phase fallback. URL `phase` param drives the active phase. PDFs are freshly typeset, name + IC blanked.
+
+## Vercel deployment — environment + commands
+
+- **`ANTHROPIC_API_KEY` is already configured in Vercel** for `Production`, `Preview`, `Development` (project `huantuk` under team `ecs-projects-e460d7b8`). Do NOT add it locally to `.env.local` and re-push as a workflow — Vercel already injects it at runtime. To verify: `cd ~/huantuk && npx vercel env ls`.
+- Deploy production from local branch (no need to merge into main first): `cd ~/huantuk && npx vercel deploy --prod --yes`. Deploys whatever's on disk to `huantuk.vercel.app` regardless of git branch.
+- If the live `/api/synthesise` returns Anthropic 401 ("invalid x-api-key"), the Vercel key has rotated/expired — surface to EC; do not silently overwrite the Vercel env without confirmation. Ask EC to run: `npx vercel env rm ANTHROPIC_API_KEY production && npx vercel env add ANTHROPIC_API_KEY production` then redeploy.
 
 ## Hackathon mode — what NOT to build
 

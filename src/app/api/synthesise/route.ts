@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { CRITERIA, findCriteria, topReferences, flatCriterionList } from "@/lib/criteria";
 import { tryPresetFallback } from "@/lib/diagnostics/preset-fallbacks";
+import { detectUnclePhase, unclePhaseFallback } from "@/lib/diagnostics/uncle-phased-fallback";
 import type {
   SynthesiseRequest,
   SynthesiseResponse,
@@ -328,6 +329,10 @@ function clamp01(n: number): number {
 
 function buildDeterministicFallback(body: SynthesiseRequest): SynthesiseResponse {
   const text = body.free_text_summary ?? "";
+  // Phased uncle-IIM demo takes precedence — its case_text contains
+  // explicit "Phase N" markers that the regular preset detector misses.
+  const phase = detectUnclePhase(text);
+  if (phase) return unclePhaseFallback(phase);
   const preset = tryPresetFallback(text);
   if (preset) return preset;
 

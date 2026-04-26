@@ -75,6 +75,12 @@ export function tryPresetFallback(text: string): SynthesiseResponse | null {
     case "iim-double-msa":
       resp = iimDoubleMsaFallback();
       break;
+    case "uncle-phased":
+      // The phased shell builds case_text per-phase and routes through
+      // detectUnclePhase / unclePhaseFallback in the synthesise route, so
+      // this branch should never be reached. Return iim baseline if it does.
+      resp = iimDoubleMsaFallback();
+      break;
   }
   // Round-2 boost: if the user has answered the screening questionnaire OR
   // free-text follow-up, reward that with a confidence bump on the top

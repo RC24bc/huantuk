@@ -8,8 +8,16 @@ set -u
 STAGED="$(git diff --cached --name-only --diff-filter=ACMR)"
 [ -z "$STAGED" ] && exit 0
 
+# Allowlist: redacted derivatives that follow the PII policy live here. The
+# `public/demo-uncle-iim/` PDFs are freshly typeset by scripts/generate-uncle-pdfs.mjs
+# from structured lab values — every identifier field is "[REDACTED]" — so the
+# pantai/kpj/pathlab brand strings in the filename refer to the lab letterhead,
+# not the patient. Strip these from the path-check input.
+SCANABLE="$(printf '%s\n' "$STAGED" | grep -v '^public/demo-uncle-iim/' || true)"
+[ -z "$SCANABLE" ] && exit 0
+
 # 1. Path check
-BAD_PATHS="$(printf '%s\n' "$STAGED" | grep -Ei '(pantai|kpj|pathlab|whatsapp|medical.report|raw-files|demo-data-staging|docs\.json|chat_conversations\.json|organizations\.json|project\.json)' || true)"
+BAD_PATHS="$(printf '%s\n' "$SCANABLE" | grep -Ei '(pantai|kpj|pathlab|whatsapp|medical.report|raw-files|demo-data-staging|docs\.json|chat_conversations\.json|organizations\.json|project\.json)' || true)"
 if [ -n "$BAD_PATHS" ]; then
   echo "🛑 PII guardrail: filename matches forbidden pattern" >&2
   echo "$BAD_PATHS" >&2
