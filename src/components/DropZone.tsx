@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { splitPdfIfNeeded } from "@/lib/upload/pdf-split";
 
-// Vercel serverless functions cap request bodies at 4.5 MB. Reject above this
-// before the upload starts so the user sees a useful message instead of the
-// platform's plain-text 413, which crashes res.json() with "Unexpected token 'R'".
-const MAX_UPLOAD_BYTES = 4 * 1024 * 1024 + 256 * 1024; // 4.25 MB safety margin under Vercel's 4.5 MB limit
+// Vercel serverless functions cap request bodies at 4.5 MB. We keep a margin
+// to account for multipart form overhead.
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024 + 256 * 1024; // 4.25 MB
 
 export type ExtractedDoc = {
   filename: string;
-  status: "pending" | "extracting" | "done" | "error";
+  status: "pending" | "splitting" | "extracting" | "done" | "error";
   error?: string;
   summary?: string;
   extracted?: unknown;
@@ -70,43 +70,111 @@ export default function DropZone({ onDocsChange }: Props) {
         return [...prev, ...incoming];
       });
 
+      // Process originals in order. For oversized PDFs we split client-side
+      // and replace the placeholder row with N rows (one per part).
+      let cursor = baseLen;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const idx = baseLen + i;
+        const idx = cursor;
 
-        if (file.size > MAX_UPLOAD_BYTES) {
+        // Oversized image — can't split, fail with a clear message.
+        if (file.size > MAX_UPLOAD_BYTES && file.type.startsWith("image/")) {
           update((prev) =>
             prev.map((d, j) =>
               j === idx
                 ? {
                     ...d,
                     status: "error",
-                    error: `File is ${formatMb(file.size)} — exceeds Vercel's 4.5 MB upload limit. Split into smaller PDFs (e.g. one per visit) or compress and retry.`,
+                    error: `Image is ${formatMb(file.size)} — exceeds 4.5 MB upload limit. Compress or scale down and retry.`,
                   }
                 : d,
             ),
           );
+          cursor += 1;
           continue;
         }
 
-        update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "extracting" } : d)));
-        try {
-          const form = new FormData();
-          form.append("file", file);
-          const res = await fetch("/api/ingest", { method: "POST", body: form });
-          const parsed = await parseIngestResponse(res);
-          if (!parsed.ok) throw new Error(parsed.error);
-          update((prev) =>
-            prev.map((d, j) =>
-              j === idx
-                ? { ...d, status: "done", summary: parsed.data.summary, extracted: parsed.data.extracted }
-                : d,
-            ),
-          );
-        } catch (err: unknown) {
-          const msg = err instanceof Error ? err.message : String(err);
-          update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "error", error: msg } : d)));
+        let parts: File[] = [file];
+        if (file.size > MAX_UPLOAD_BYTES) {
+          update((prev) => prev.map((d, j) => (j === idx ? { ...d, status: "splitting" } : d)));
+          const result = await splitPdfIfNeeded(file, MAX_UPLOAD_BYTES);
+          if (result.kind === "ok") {
+            parts = result.parts;
+            // Expand the single placeholder row into N rows (one per part).
+            update((prev) => {
+              const before = prev.slice(0, idx);
+              const after = prev.slice(idx + 1);
+              const partRows: ExtractedDoc[] = parts.map((p) => ({
+                filename: p.name,
+                status: "pending",
+              }));
+              return [...before, ...partRows, ...after];
+            });
+          } else if (result.kind === "single-page-too-large") {
+            update((prev) =>
+              prev.map((d, j) =>
+                j === idx
+                  ? {
+                      ...d,
+                      status: "error",
+                      error: `Single-page PDF is ${formatMb(result.size)} — too large to split. Compress (Preview → Export → Reduce File Size) and retry.`,
+                    }
+                  : d,
+              ),
+            );
+            cursor += 1;
+            continue;
+          } else if (result.kind === "not-pdf") {
+            update((prev) =>
+              prev.map((d, j) =>
+                j === idx
+                  ? {
+                      ...d,
+                      status: "error",
+                      error: `File is ${formatMb(file.size)} — exceeds 4.5 MB upload limit and isn't a PDF we can split.`,
+                    }
+                  : d,
+              ),
+            );
+            cursor += 1;
+            continue;
+          } else {
+            update((prev) =>
+              prev.map((d, j) =>
+                j === idx
+                  ? { ...d, status: "error", error: `Couldn't split PDF: ${result.message}` }
+                  : d,
+              ),
+            );
+            cursor += 1;
+            continue;
+          }
         }
+
+        for (let p = 0; p < parts.length; p++) {
+          const partIdx = cursor + p;
+          const part = parts[p];
+          update((prev) => prev.map((d, j) => (j === partIdx ? { ...d, status: "extracting" } : d)));
+          try {
+            const form = new FormData();
+            form.append("file", part);
+            const res = await fetch("/api/ingest", { method: "POST", body: form });
+            const parsed = await parseIngestResponse(res);
+            if (!parsed.ok) throw new Error(parsed.error);
+            update((prev) =>
+              prev.map((d, j) =>
+                j === partIdx
+                  ? { ...d, status: "done", summary: parsed.data.summary, extracted: parsed.data.extracted }
+                  : d,
+              ),
+            );
+          } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err);
+            update((prev) => prev.map((d, j) => (j === partIdx ? { ...d, status: "error", error: msg } : d)));
+          }
+        }
+
+        cursor += parts.length;
       }
     },
     [update],
@@ -134,7 +202,7 @@ export default function DropZone({ onDocsChange }: Props) {
         }
       >
         <p className="text-base font-medium mb-1">Drop the folder of documents here</p>
-        <p className="text-sm text-zinc-500">PDFs, JPEGs, PNGs · any facility · any order</p>
+        <p className="text-sm text-zinc-500">PDFs, JPEGs, PNGs · any facility · any order · large PDFs auto-split</p>
         <input
           id="huantuk-file-input"
           ref={inputRef}
@@ -152,7 +220,7 @@ export default function DropZone({ onDocsChange }: Props) {
             We couldn&apos;t read one or more of those files.
           </p>
           <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-            Specific errors are shown next to each file below. PDFs larger than 4.5 MB exceed the upload limit — split them (one visit / one report per file) or compress and retry. If every file is failing with the same backend error, the server is likely missing an API key — let your operator know.
+            Specific errors are shown next to each file below. Multi-page PDFs over 4.5 MB are auto-split into parts; single-page giants and large images need to be compressed first. If every file is failing with the same backend error, the server is likely missing an API key — let your operator know.
           </p>
         </div>
       )}
@@ -178,12 +246,14 @@ export default function DropZone({ onDocsChange }: Props) {
 function StatusBadge({ status }: { status: ExtractedDoc["status"] }) {
   const styles: Record<ExtractedDoc["status"], string> = {
     pending: "bg-zinc-100 text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400",
+    splitting: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
     extracting: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
     done: "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300",
     error: "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300",
   };
   const labels: Record<ExtractedDoc["status"], string> = {
     pending: "queued",
+    splitting: "splitting…",
     extracting: "extracting…",
     done: "done",
     error: "error",
