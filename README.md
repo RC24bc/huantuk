@@ -2,7 +2,7 @@
 
 > *"Illnesses which in the past caused exorcism — or what traditional Chinese would say, huantuk (撞鬼) — that are difficult to diagnose but Claude can solve."*
 
-**Huantuk** is a clinical decision-support tool for autoimmune cases that don't fit the textbook. Built on **Claude Opus 4.7** for the Cerebral Valley × Anthropic hackathon. Live at [huantuk.tech](https://huantuk.tech).
+**Huantuk** is a clinical decision-support tool for autoimmune cases that don't fit the textbook. Built on **Claude Opus 4.7** for the Cerebral Valley × Anthropic hackathon. Live at [huantuk.vercel.app](https://huantuk.vercel.app).
 
 ## Two functions, one workflow
 
@@ -56,7 +56,7 @@ System prompts in `src/lib/agents/`. Each agent's prompt is a small, auditable f
 - Next.js 16 · React 19 · TypeScript · Tailwind 4
 - `@anthropic-ai/sdk` → `claude-opus-4-7`
 - No DB. Case state is in-memory only — privacy by absence.
-- Deploy: Vercel + custom domain `huantuk.tech`. See [`DEPLOY.md`](./DEPLOY.md).
+- Deploy: Vercel at `huantuk.vercel.app`. See [`DEPLOY.md`](./DEPLOY.md).
 
 ## Dev
 
