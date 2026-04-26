@@ -13,6 +13,7 @@ import type {
 } from "@/lib/agents/drug-discovery/types";
 import type { CitedReference } from "@/lib/diagnostics/types";
 import { CitationLine } from "./DifferentialReasoning";
+import { usePersona, useCopy } from "@/lib/persona";
 
 type Props = {
   topDifferentialId: string | null;
@@ -72,6 +73,9 @@ export default function DrugDiscoveryPanel({
   const [trialData, setTrialData] = useState<TrialMatchResponse | null>(null);
   const [trialError, setTrialError] = useState<string | null>(null);
 
+  const { mode } = usePersona();
+  const copy = useCopy();
+
   if (!topDifferentialId || !topDifferentialLabel) return null;
 
   const body = {
@@ -79,6 +83,7 @@ export default function DrugDiscoveryPanel({
     top_differential_label: topDifferentialLabel,
     case_summary: caseSummary ?? null,
     extracted_findings_summary: extractedSummary ?? null,
+    register: mode,
   };
 
   async function callRoute<T>(path: string): Promise<T> {
@@ -134,15 +139,19 @@ export default function DrugDiscoveryPanel({
   }
 
   return (
-    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+    <section className="rounded-lg border border-stone-200 bg-white p-6">
       <header className="mb-5">
-        <h3 className="text-lg font-semibold tracking-tight">Personalized Drug Discovery</h3>
-        <p className="text-sm text-zinc-500 mt-1 leading-relaxed">
-          Three clinical research PhD agents reason against the patient&apos;s leading differential. Without an
-          ANTHROPIC_API_KEY in the environment, results are <span className="font-medium">mock-up demos</span> for the case at hand — clearly labelled.
+        <h3 className="text-lg font-semibold tracking-tight">
+          {mode === "patient" ? "Other treatments to ask your doctor about" : "Personalized Drug Discovery"}
+        </h3>
+        <p className="text-sm text-stone-500 mt-1 leading-relaxed">
+          {mode === "patient"
+            ? "Three AI specialists look across the world's medical research. They suggest other approved drugs that might help, drugs already used 'off-label' in cases like yours, and research studies you could ask to join. Bring this list to your doctor."
+            : "Three clinical research agents reason against the patient's leading differential. Live results require ANTHROPIC_API_KEY in the environment — otherwise candidates are clearly-labelled mocks for the case at hand."}
         </p>
-        <p className="text-xs text-zinc-500 mt-2">
-          Top differential: <span className="font-medium text-zinc-700 dark:text-zinc-300">{topDifferentialLabel}</span>
+        <p className="text-xs text-stone-500 mt-2">
+          {mode === "patient" ? "Working from: " : "Top differential: "}
+          <span className="font-medium text-stone-700">{topDifferentialLabel}</span>
         </p>
       </header>
 
@@ -150,23 +159,29 @@ export default function DrugDiscoveryPanel({
         <button
           onClick={runRepurpose}
           disabled={repStatus === "loading"}
-          className="text-sm px-4 py-2 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
+          className="text-sm px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-medium disabled:opacity-50 transition-colors"
         >
-          {repStatus === "loading" ? "Reasoning…" : "Find repurposing candidates"}
+          {repStatus === "loading"
+            ? mode === "patient" ? "Searching…" : "Reasoning…"
+            : copy("cure.repurpose_btn")}
         </button>
         <button
           onClick={runOffLabel}
           disabled={offStatus === "loading"}
-          className="text-sm px-4 py-2 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
+          className="text-sm px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-medium disabled:opacity-50 transition-colors"
         >
-          {offStatus === "loading" ? "Mining literature…" : "Discover off-label options"}
+          {offStatus === "loading"
+            ? mode === "patient" ? "Reading papers…" : "Mining literature…"
+            : copy("cure.offlabel_btn")}
         </button>
         <button
           onClick={runTrialMatch}
           disabled={trialStatus === "loading"}
-          className="text-sm px-4 py-2 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
+          className="text-sm px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-medium disabled:opacity-50 transition-colors"
         >
-          {trialStatus === "loading" ? "Matching trials…" : "Match clinical trials"}
+          {trialStatus === "loading"
+            ? mode === "patient" ? "Finding studies…" : "Matching trials…"
+            : copy("cure.trials_btn")}
         </button>
       </div>
 

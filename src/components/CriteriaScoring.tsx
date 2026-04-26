@@ -2,6 +2,7 @@
 
 import type { CriteriaScore } from "@/lib/diagnostics/types";
 import { CitationLine } from "./DifferentialReasoning";
+import { useCopy } from "@/lib/persona";
 
 type Props = {
   scores: CriteriaScore[];
@@ -34,14 +35,13 @@ const ITEM_GLYPH: Record<"met" | "unmet" | "unknown", string> = {
 };
 
 export default function CriteriaScoringPanel({ scores }: Props) {
+  const copy = useCopy();
   if (scores.length === 0) return null;
   return (
-    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+    <section className="rounded-lg border border-stone-200 p-6 bg-white">
       <header className="mb-4">
-        <h3 className="text-lg font-semibold tracking-tight">Classification criteria</h3>
-        <p className="text-sm text-zinc-500 mt-1">
-          Each disease scored against its published classification criteria — every criterion shown so the clinician can audit. Citations link to the source paper.
-        </p>
+        <h3 className="text-lg font-semibold tracking-tight">{copy("diagnosis.criteria_h")}</h3>
+        <p className="text-sm text-stone-500 mt-1 leading-relaxed">{copy("diagnosis.criteria_p")}</p>
       </header>
       <div className="space-y-4">
         {scores.map((s) => (

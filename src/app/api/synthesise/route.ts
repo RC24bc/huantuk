@@ -15,11 +15,11 @@ export const maxDuration = 90;
 
 const MODEL = "claude-opus-4-7";
 
-const SYSTEM = `You are a senior internist + rheumatologist serving as the case-synthesis reasoner for Patient Atlas (clinical decision support, NOT a diagnostic device).
+const BASE_SYSTEM = `You are a senior internist + rheumatologist serving as the case-synthesis reasoner for Huantuk (clinical decision support, NOT a diagnostic device).
 
 You receive (a) extracted findings from a folder of medical documents and clinical photos for one patient, and (b) the catalogue of classification criteria sets the case may be evaluated against. Your job:
 
-1. Write a 3-sentence "narrative_summary" of the case in neutral clinical register.
+1. Write a 3-sentence "narrative_summary" of the case.
 2. Produce the top 5 ranked differential diagnoses from the criteria_index. Each differential MUST include:
    - posterior_probability: a calibrated estimate in [0,1]; the top 5 should sum to roughly 0.8–1.0 across them.
    - key_evidence: ONE sentence (max 220 chars) naming the discriminating findings that pull the case toward this differential.
@@ -27,12 +27,13 @@ You receive (a) extracted findings from a folder of medical documents and clinic
    - contradicting_findings: array of short bullets (≤7 words each) — case findings that argue against this differential.
    - citations: 1–3 references chosen from the differential's reference list provided in the criteria_index. Cite by exact title/authors/journal/year/pages/doi/pmid as supplied — do NOT invent or paraphrase. Prefer the classification-criteria paper plus one landmark review.
 3. For each of the same top differentials, score the corresponding classification criteria set. Mark each criterion as "met", "unmet", or "unknown" (use "unknown" liberally when the case data is silent — do not guess). Provide a one-clause "evidence" string for "met" criteria. Then state classification_status: "meets" | "does_not_meet" | "borderline" | "insufficient_data".
+4. Generate "clarifying_questions": 3–6 specific questions the patient/clinician should answer to meaningfully narrow the differential. Each must reference a real gap in the case data and target a high-information-gain answer. Plain language. No multi-part questions.
+5. Generate "recommended_additional_reports": 2–5 specific tests or imaging studies that, if obtained, would most efficiently shrink the differential. Name the test (e.g. "ANA panel with anti-dsDNA, anti-Sm, anti-SSA/SSB, anti-RNP, anti-Scl-70, anti-Jo-1") and one short clause on why.
 
 Strict rules:
 - Output JSON only, no markdown fences, no prose outside JSON.
 - Never invent citations. Use only the references supplied in the criteria_index.
 - Never include patient identifiers — refer to "the patient" only.
-- Use plain neutral register suitable for a referring rheumatologist.
 - "unknown" > guessing for criteria you cannot verify from the case.
 
 Output shape:
@@ -59,8 +60,22 @@ Output shape:
         { "criterion_id": "string", "status": "met|unmet|unknown", "evidence": "string|null" }
       ]
     }
-  ]
+  ],
+  "clarifying_questions": ["..."],
+  "recommended_additional_reports": ["..."]
 }`;
+
+const REGISTER_DOCTOR = `
+
+REGISTER: Doctor-facing. Use precise clinical language (eponyms, mechanism terms, antibody names). Concise, neutral register suitable for a referring rheumatologist. The questions you generate may use medical terms (the user is a clinician).`;
+
+const REGISTER_PATIENT = `
+
+REGISTER: Patient-facing. The reader has no medical training and is roughly at a 14-year-old reading level. Translate every medical term: never write "polyarthritis" without "(many joints inflamed)"; never write "ANA" without "(a blood test that looks for self-attacking antibodies)". The narrative_summary should read like you are explaining the case back to the patient. Citations stay in clinical form (clinicians need them). The clarifying_questions MUST be in plain language a 14-year-old could answer (e.g. "Have you noticed your fingers turning white or blue when it's cold?" not "Do you have Raynaud's phenomenon?"). The recommended_additional_reports must name the test in plain words AND in brackets the proper name (e.g. "A blood test for self-attacking antibodies (ANA panel)").`;
+
+function buildSystem(register: "doctor" | "patient"): string {
+  return BASE_SYSTEM + (register === "patient" ? REGISTER_PATIENT : REGISTER_DOCTOR);
+}
 
 function buildCriteriaIndex() {
   return CRITERIA.map((c) => ({
@@ -98,12 +113,14 @@ export async function POST(req: NextRequest) {
     criteria_index: criteriaIndex,
   };
 
+  const register = body.register === "patient" ? "patient" : "doctor";
+
   try {
     const client = new Anthropic({ apiKey });
     const res = await client.messages.create({
       model: MODEL,
       max_tokens: 16000,
-      system: SYSTEM,
+      system: buildSystem(register),
       messages: [
         {
           role: "user",
@@ -132,6 +149,8 @@ export async function POST(req: NextRequest) {
 
     const differentials = normaliseDifferentials(parsed.differentials);
     const criteria_scores = normaliseCriteriaScores(parsed.criteria_scores, differentials);
+    const clarifying_questions = asStringArray(parsed.clarifying_questions).slice(0, 6);
+    const recommended_additional_reports = asStringArray(parsed.recommended_additional_reports).slice(0, 5);
 
     const resp: SynthesiseResponse = {
       narrative_summary:
@@ -140,6 +159,8 @@ export async function POST(req: NextRequest) {
           : "(narrative summary missing from Opus output)",
       differentials,
       criteria_scores,
+      clarifying_questions,
+      recommended_additional_reports,
       source: "opus-4.7",
     };
     return NextResponse.json(resp);
@@ -162,6 +183,8 @@ function safeParse(s: string): {
   narrative_summary?: unknown;
   differentials?: unknown;
   criteria_scores?: unknown;
+  clarifying_questions?: unknown;
+  recommended_additional_reports?: unknown;
 } | null {
   try {
     return JSON.parse(s);

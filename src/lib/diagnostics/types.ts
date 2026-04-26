@@ -100,12 +100,15 @@ export type CriteriaScore = {
 export type SynthesiseRequest = {
   extracted_docs: { filename: string; extracted: unknown }[];
   free_text_summary?: string;
+  register?: "doctor" | "patient";
 };
 
 export type SynthesiseResponse = {
   narrative_summary: string;
   differentials: DifferentialReasoning[];
   criteria_scores: CriteriaScore[];
+  clarifying_questions?: string[];
+  recommended_additional_reports?: string[];
   source: "opus-4.7" | "deterministic-fallback";
   warnings?: string[];
 };

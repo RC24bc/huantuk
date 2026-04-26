@@ -1,6 +1,7 @@
 "use client";
 
 import type { MimicCheckResponse, MimicHit } from "@/lib/agents/mimic-detector";
+import { useCopy, usePersona } from "@/lib/persona";
 
 type Props = {
   status: "idle" | "loading" | "ready" | "error";
@@ -33,21 +34,25 @@ const CATEGORY_COLOUR: Record<MimicHit["category"], string> = {
 };
 
 export default function MimicCheckPanel({ status, data, error, onRun, hasDifferentials }: Props) {
+  const copy = useCopy();
+  const { mode } = usePersona();
   return (
-    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
-      <header className="flex items-baseline justify-between mb-4">
+    <section className="rounded-lg border border-stone-200 p-6 bg-white">
+      <header className="flex items-baseline justify-between mb-4 gap-3">
         <div>
-          <h3 className="text-lg font-semibold tracking-tight">Mimics that get missed</h3>
-          <p className="text-sm text-zinc-500 mt-1">
-            Conditions that look like the leading differential but aren&apos;t autoimmune — must be excluded before chronic immunosuppression.
-          </p>
+          <h3 className="text-lg font-semibold tracking-tight">{copy("diagnosis.mimic_h")}</h3>
+          <p className="text-sm text-stone-500 mt-1 leading-relaxed">{copy("diagnosis.mimic_p")}</p>
         </div>
         <button
           onClick={onRun}
           disabled={status === "loading" || !hasDifferentials}
-          className="text-sm px-3 py-1.5 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
+          className="text-sm px-3 py-1.5 rounded-md bg-stone-900 text-white disabled:opacity-50 shrink-0"
         >
-          {status === "loading" ? "Screening…" : status === "ready" ? "Refresh" : "Screen mimics"}
+          {status === "loading"
+            ? mode === "patient" ? "Checking…" : "Screening…"
+            : status === "ready"
+            ? "Refresh"
+            : mode === "patient" ? "Check for look-alikes" : "Screen mimics"}
         </button>
       </header>
 
