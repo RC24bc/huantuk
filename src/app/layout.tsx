@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Huantuk — When five hospitals can't tell you what's wrong",
+  title: "Huantuk — The 50-page folder you didn't have time to read",
   description:
-    "Huantuk reads every report you've ever had, across every clinic, and tells you in plain English what's most likely going on. Built on Claude Opus 4.7.",
+    "Huantuk reads your patient's full folder of reports in 60 seconds and returns cited differentials, classification-criteria scores, and the next test ranked by information gain. Decision support for clinicians treating undiagnosed autoimmune cases. $30 per case. Built on Claude Opus 4.7.",
 };
 
 export default function RootLayout({

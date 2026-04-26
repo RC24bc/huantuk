@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import { REPURPOSE_SYSTEM_PROMPT } from "@/lib/agents/drug-discovery/prompts";
 import { mockRepurpose } from "@/lib/agents/drug-discovery/mocks";
 import type { RepurposeResponse, RepurposingCandidate } from "@/lib/agents/drug-discovery/types";
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 4000,
       system: REPURPOSE_SYSTEM_PROMPT,
       messages: [

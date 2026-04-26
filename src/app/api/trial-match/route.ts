@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import { TRIAL_MATCH_SYSTEM_PROMPT } from "@/lib/agents/drug-discovery/prompts";
 import { mockTrialMatch } from "@/lib/agents/drug-discovery/mocks";
 import type { TrialMatchResponse, TrialMatch } from "@/lib/agents/drug-discovery/types";
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 4500,
       system: TRIAL_MATCH_SYSTEM_PROMPT,
       messages: [
