@@ -19,7 +19,8 @@ export type DemoPresetId =
   | "lupus-refractory"
   | "igg4rd"
   | "undifferentiated-ctd"
-  | "iim-double-msa";
+  | "iim-double-msa"
+  | "uncle-phased";
 
 export type DemoPreset = {
   id: DemoPresetId;
@@ -30,6 +31,14 @@ export type DemoPreset = {
 };
 
 export const DEMO_PRESETS: DemoPreset[] = [
+  {
+    id: "uncle-phased",
+    label: "Real Malaysian case · 3-phase upload simulation",
+    short_label: "Real case · 3-phase upload",
+    one_line: "Walk through admission → mid-workup → definitive diagnosis with realistic per-phase report uploads",
+    case_text:
+      "Phased preset — see /demo-uncle-iim/phase{1,2,3}/ PDFs and uncle-phased-fallback.ts. The phased shell builds the case_text per phase rather than using this single string.",
+  },
   {
     id: "aosd",
     label: "Adult-Onset Still's pattern",

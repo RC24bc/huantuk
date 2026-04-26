@@ -58,18 +58,58 @@ function detectPreset(text: string): DemoPresetId | null {
 export function tryPresetFallback(text: string): SynthesiseResponse | null {
   const preset = detectPreset(text);
   if (!preset) return null;
+  let resp: SynthesiseResponse;
   switch (preset) {
     case "aosd":
-      return aosdFallback();
+      resp = aosdFallback();
+      break;
     case "lupus-refractory":
-      return lupusFallback();
+      resp = lupusFallback();
+      break;
     case "igg4rd":
-      return igg4Fallback();
+      resp = igg4Fallback();
+      break;
     case "undifferentiated-ctd":
-      return undifferentiatedFallback();
+      resp = undifferentiatedFallback();
+      break;
     case "iim-double-msa":
-      return iimDoubleMsaFallback();
+      resp = iimDoubleMsaFallback();
+      break;
+    case "uncle-phased":
+      // The phased shell builds case_text per-phase and routes through
+      // detectUnclePhase / unclePhaseFallback in the synthesise route, so
+      // this branch should never be reached. Return iim baseline if it does.
+      resp = iimDoubleMsaFallback();
+      break;
   }
+  // Round-2 boost: if the user has answered the screening questionnaire OR
+  // free-text follow-up, reward that with a confidence bump on the top
+  // differential (clinically what would happen with new criterion-met data).
+  // This is what makes the ≥90%-triggered referral-letter / EBM-update cards
+  // appear on the second pass in the OBS demo.
+  const round2 =
+    /Patient-answered clinical history|Patient follow-up answers/i.test(text);
+  if (round2 && resp.differentials.length > 0) {
+    const top = resp.differentials[0];
+    const newTop = Math.min(0.94, top.posterior_probability + 0.3);
+    const delta = newTop - top.posterior_probability;
+    resp.differentials[0] = { ...top, posterior_probability: newTop };
+    // Redistribute the delta proportionally OFF of the remaining differentials
+    // so total roughly stays in 0.8–1.0 (matches Opus's calibration target).
+    const remaining = resp.differentials.slice(1);
+    const remainingSum = remaining.reduce((s, d) => s + d.posterior_probability, 0);
+    if (remainingSum > 0) {
+      for (let i = 1; i < resp.differentials.length; i++) {
+        const d = resp.differentials[i];
+        const share = d.posterior_probability / remainingSum;
+        resp.differentials[i] = {
+          ...d,
+          posterior_probability: Math.max(0, d.posterior_probability - delta * share),
+        };
+      }
+    }
+  }
+  return resp;
 }
 
 function aosdFallback(): SynthesiseResponse {

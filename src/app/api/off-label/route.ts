@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import { OFFLABEL_SYSTEM_PROMPT } from "@/lib/agents/drug-discovery/prompts";
 import { mockOffLabel } from "@/lib/agents/drug-discovery/mocks";
 import type { OffLabelResponse, OffLabelCandidate } from "@/lib/agents/drug-discovery/types";
@@ -13,7 +13,10 @@ type Body = {
   case_summary?: string;
   prior_therapies?: string[];
   extracted_findings_summary?: string;
+  register?: "doctor" | "patient";
 };
+
+const PATIENT_PREFIX = `\n\nADDITIONAL REGISTER RULE: The reader is a patient with no medical training (~14-year-old reading level). The "approved_indication", "off_label_use_summary", "pathway.notes", "safety_flags" and "reasoning_steps" MUST be in plain English; translate medical terms in brackets the first time. Drug names stay in generic form. References stay in clinical form for the doctor.`;
 
 export async function POST(req: NextRequest) {
   let body: Body;
@@ -31,11 +34,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(mockOffLabel(body.top_differential_id));
   }
 
+  const register = body.register === "patient" ? "patient" : "doctor";
+  const system =
+    OFFLABEL_SYSTEM_PROMPT + (register === "patient" ? PATIENT_PREFIX : "");
+
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 4000,
-      system: OFFLABEL_SYSTEM_PROMPT,
+      system,
       messages: [
         {
           role: "user",

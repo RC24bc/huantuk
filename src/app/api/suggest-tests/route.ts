@@ -12,7 +12,10 @@ import type {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const MODEL = "claude-opus-4-7";
+// Sonnet 4.6 — ranks next investigations by expected information gain.
+// Test catalog + differential context is structured; Sonnet handles it
+// at ~5× lower cost than Opus.
+const MODEL = "claude-sonnet-4-6";
 const CATALOG = catalogJson as unknown as TestCatalog;
 
 const SYSTEM = `You are a senior internist + rheumatologist serving as the "what's missing" reasoner inside Patient Atlas (clinical decision support, not a diagnostic device).

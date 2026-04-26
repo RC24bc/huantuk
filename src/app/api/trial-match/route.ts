@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import { TRIAL_MATCH_SYSTEM_PROMPT } from "@/lib/agents/drug-discovery/prompts";
 import { mockTrialMatch } from "@/lib/agents/drug-discovery/mocks";
 import type { TrialMatchResponse, TrialMatch } from "@/lib/agents/drug-discovery/types";
@@ -15,7 +15,10 @@ type Body = {
   extracted_findings_summary?: string;
   patient_age?: number;
   patient_sex?: string;
+  register?: "doctor" | "patient";
 };
+
+const PATIENT_PREFIX = `\n\nADDITIONAL REGISTER RULE: The reader is a patient (~14-year-old reading level). The "title" must be readable; translate "phase 2 RCT" as "phase 2 study (a stage where they test if it works)". The "inclusion_match_reasoning" and "potential_exclusion_concerns" MUST be in plain language. The "intervention" can keep the drug's generic name but explain the class in brackets. Trial IDs and registry stay in their official form (the patient brings these to their doctor).`;
 
 export async function POST(req: NextRequest) {
   let body: Body;
@@ -33,11 +36,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(mockTrialMatch(body.top_differential_id));
   }
 
+  const register = body.register === "patient" ? "patient" : "doctor";
+  const system =
+    TRIAL_MATCH_SYSTEM_PROMPT + (register === "patient" ? PATIENT_PREFIX : "");
+
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 4500,
-      system: TRIAL_MATCH_SYSTEM_PROMPT,
+      system,
       messages: [
         {
           role: "user",

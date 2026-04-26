@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import { REPURPOSE_SYSTEM_PROMPT } from "@/lib/agents/drug-discovery/prompts";
 import { mockRepurpose } from "@/lib/agents/drug-discovery/mocks";
 import type { RepurposeResponse, RepurposingCandidate } from "@/lib/agents/drug-discovery/types";
@@ -13,7 +13,10 @@ type Body = {
   case_summary?: string;
   prior_therapies?: string[];
   extracted_findings_summary?: string;
+  register?: "doctor" | "patient";
 };
+
+const PATIENT_PREFIX = `\n\nADDITIONAL REGISTER RULE: The reader is a patient with no medical training (~14-year-old reading level). For each candidate, the "approved_indication" and "proposed_mechanism_in_case" fields MUST be in plain English. Translate every medical term in brackets the first time it appears (e.g. "polyarthritis (many joints inflamed)"). Drug names stay in their generic international form. Reasoning steps and safety flags must be patient-readable. References stay in clinical form (your treating doctor reads those).`;
 
 export async function POST(req: NextRequest) {
   let body: Body;
@@ -31,11 +34,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(mockRepurpose(body.top_differential_id));
   }
 
+  const register = body.register === "patient" ? "patient" : "doctor";
+  const system =
+    REPURPOSE_SYSTEM_PROMPT + (register === "patient" ? PATIENT_PREFIX : "");
+
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 4000,
-      system: REPURPOSE_SYSTEM_PROMPT,
+      system,
       messages: [
         {
           role: "user",

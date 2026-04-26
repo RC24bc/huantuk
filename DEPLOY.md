@@ -52,9 +52,9 @@ Linking the repo means every `git push` to `main` auto-deploys. Right now it's m
 3. (You may need to install the Vercel GitHub App on the RC24bc account first — Vercel walks you through it.)
 4. After connecting, every push to `main` triggers a new production deploy automatically.
 
-## Custom domain (deferred)
+## Domain
 
-`huantuk.tech` is registered but parking — current MVP uses the free Vercel domain. To activate later: Vercel project Settings → Domains → Add `huantuk.tech` → set the DNS records Vercel shows you at the registrar.
+Production runs on the free Vercel domain `huantuk.vercel.app`. No custom domain configured.
 
 ## Local dev (uncle's PDFs / private data)
 

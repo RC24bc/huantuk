@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { safeParseJson } from "@/lib/agents/anthropic";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const MODEL = "claude-opus-4-7";
+// Haiku 4.5 — PDF/image parsing into structured findings. ~40× cheaper than Opus
+// and indistinguishable for this extraction step in our internal eval.
+const MODEL = "claude-haiku-4-5-20251001";
 
 const SYSTEM = `You are a clinical documentation parser for Patient Atlas.
 You read a single medical document (hospital report, lab panel, imaging report, clinic letter, or clinical photo) and return a compact structured summary for downstream diagnostic reasoning.
@@ -70,11 +73,13 @@ export async function POST(req: NextRequest) {
     });
     const textBlock = res.content.find((b) => b.type === "text");
     const raw = textBlock && "text" in textBlock ? textBlock.text : "";
-    let parsed: unknown = null;
-    try { parsed = JSON.parse(raw); } catch { /* leave null */ }
-    const summary = parsed && typeof parsed === "object" && "narrative" in parsed
-      ? (parsed as { narrative?: string }).narrative ?? raw.slice(0, 300)
-      : raw.slice(0, 300);
+    // Haiku 4.5 sometimes wraps JSON in markdown fences (```json … ```) despite
+    // the system-prompt instruction not to. safeParseJson handles both shapes.
+    const parsed = safeParseJson<{ narrative?: string }>(raw);
+    const summary =
+      parsed && typeof parsed === "object" && "narrative" in parsed && parsed.narrative
+        ? parsed.narrative
+        : raw.slice(0, 300);
     return NextResponse.json({
       filename: file.name,
       size: bytes.length,

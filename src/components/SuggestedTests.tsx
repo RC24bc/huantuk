@@ -4,6 +4,7 @@ import type {
   Recommendation,
   SuggestResponse,
 } from "@/lib/diagnostics/types";
+import { useCopy, usePersona } from "@/lib/persona";
 
 type Props = {
   status: "idle" | "loading" | "ready" | "error";
@@ -40,21 +41,25 @@ const DIRECTION_COLOUR: Record<string, string> = {
 };
 
 export default function SuggestedTests({ status, data, error, onRun, hasDifferentials }: Props) {
+  const copy = useCopy();
+  const { mode } = usePersona();
   return (
-    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
-      <header className="flex items-baseline justify-between mb-4">
+    <section className="rounded-lg border border-stone-200 p-6 bg-white">
+      <header className="flex items-baseline justify-between mb-4 gap-3">
         <div>
-          <h3 className="text-lg font-semibold tracking-tight">What&apos;s missing</h3>
-          <p className="text-sm text-zinc-500 mt-1">
-            Highest-information-gain tests not yet ordered, ranked for this case.
-          </p>
+          <h3 className="text-lg font-semibold tracking-tight">{copy("diagnosis.tests_h")}</h3>
+          <p className="text-sm text-stone-500 mt-1 leading-relaxed">{copy("diagnosis.tests_p")}</p>
         </div>
         <button
           onClick={onRun}
           disabled={status === "loading" || !hasDifferentials}
-          className="text-sm px-3 py-1.5 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 disabled:opacity-50"
+          className="text-sm px-3 py-1.5 rounded-md bg-stone-900 text-white disabled:opacity-50 shrink-0"
         >
-          {status === "loading" ? "Reasoning…" : status === "ready" ? "Refresh" : "Suggest tests"}
+          {status === "loading"
+            ? mode === "patient" ? "Thinking…" : "Reasoning…"
+            : status === "ready"
+            ? "Refresh"
+            : mode === "patient" ? "Suggest next tests" : "Suggest tests"}
         </button>
       </header>
 

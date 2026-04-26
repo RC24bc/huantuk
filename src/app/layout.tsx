@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Patient Atlas — Huantuk",
+  title: "Huantuk — The 50-page folder you didn't have time to read",
   description:
-    "Post-workup diagnostic synthesis for autoimmune cases that defied investigation. Built on Claude Opus 4.7. Every recommendation cites a published source.",
+    "Huantuk reads your patient's full folder of reports in 60 seconds and returns cited differentials, classification-criteria scores, and the next test ranked by information gain. Decision support for clinicians treating undiagnosed autoimmune cases. $30 per case. Built on Claude Opus 4.7.",
 };
 
 export default function RootLayout({

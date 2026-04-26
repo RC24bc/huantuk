@@ -5,7 +5,7 @@ import {
   type MimicCheckResponse,
   type MimicHit,
 } from "@/lib/agents/mimic-detector";
-import { getClient, DEFAULT_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
+import { getClient, SONNET_MODEL, extractText, safeParseJson } from "@/lib/agents/anthropic";
 import type { DifferentialReasoning } from "@/lib/diagnostics/types";
 
 export const runtime = "nodejs";
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await client.messages.create({
-      model: DEFAULT_MODEL,
+      model: SONNET_MODEL,
       max_tokens: 2500,
       system: MIMIC_SYSTEM_PROMPT,
       messages: [

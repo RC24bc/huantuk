@@ -1,20 +1,20 @@
 "use client";
 
 import type { CitedReference, DifferentialReasoning } from "@/lib/diagnostics/types";
+import { useCopy } from "@/lib/persona";
 
 type Props = {
   differentials: DifferentialReasoning[];
 };
 
 export default function DifferentialReasoningPanel({ differentials }: Props) {
+  const copy = useCopy();
   if (differentials.length === 0) return null;
   return (
-    <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+    <section className="rounded-lg border border-stone-200 p-6 bg-white">
       <header className="mb-4">
-        <h3 className="text-lg font-semibold tracking-tight">Differential reasoning</h3>
-        <p className="text-sm text-zinc-500 mt-1">
-          Each differential names the supporting evidence in the case AND cites the published source — so the doctor can verify, not just trust.
-        </p>
+        <h3 className="text-lg font-semibold tracking-tight">{copy("diagnosis.differentials_h")}</h3>
+        <p className="text-sm text-stone-500 mt-1 leading-relaxed">{copy("diagnosis.differentials_p")}</p>
       </header>
       <ol className="space-y-4">
         {differentials.map((d) => (
@@ -26,6 +26,7 @@ export default function DifferentialReasoningPanel({ differentials }: Props) {
 }
 
 function DifferentialCard({ d }: { d: DifferentialReasoning }) {
+  const copy = useCopy();
   const pct = Math.round(d.posterior_probability * 100);
   return (
     <li className="rounded-md border border-zinc-200 dark:border-zinc-800 p-4">
@@ -43,7 +44,7 @@ function DifferentialCard({ d }: { d: DifferentialReasoning }) {
         {d.supporting_findings.length > 0 && (
           <div>
             <h5 className="text-xs font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400 mb-1">
-              Supports
+              {copy("common.supports")}
             </h5>
             <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-0.5">
               {d.supporting_findings.map((f, i) => (
@@ -55,7 +56,7 @@ function DifferentialCard({ d }: { d: DifferentialReasoning }) {
         {d.contradicting_findings.length > 0 && (
           <div>
             <h5 className="text-xs font-medium uppercase tracking-wide text-rose-700 dark:text-rose-400 mb-1">
-              Contradicts
+              {copy("common.contradicts")}
             </h5>
             <ul className="text-sm text-zinc-700 dark:text-zinc-300 space-y-0.5">
               {d.contradicting_findings.map((f, i) => (
@@ -68,7 +69,7 @@ function DifferentialCard({ d }: { d: DifferentialReasoning }) {
       {d.citations.length > 0 && (
         <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800">
           <h5 className="text-xs font-medium uppercase tracking-wide text-zinc-500 mb-2">
-            Citations
+            {copy("common.citations")}
           </h5>
           <ul className="space-y-2">
             {d.citations.map((c, i) => (
