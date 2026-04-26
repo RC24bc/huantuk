@@ -93,6 +93,7 @@ export default function DropZone({ onDocsChange }: Props) {
         <p className="text-base font-medium mb-1">Drop the folder of documents here</p>
         <p className="text-sm text-zinc-500">PDFs, JPEGs, PNGs · any facility · any order</p>
         <input
+          id="huantuk-file-input"
           ref={inputRef}
           type="file"
           multiple
@@ -102,6 +103,17 @@ export default function DropZone({ onDocsChange }: Props) {
         />
       </div>
 
+      {docs.some((d) => d.status === "error") && (
+        <div role="alert" className="mt-4 rounded-md border border-red-300 bg-red-50 dark:bg-red-950 dark:border-red-900 p-4">
+          <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+            We couldn&apos;t read one or more of those files.
+          </p>
+          <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+            Specific errors are shown next to each file below. If every file is failing with the same message, the server is likely missing an API key — let your operator know.
+          </p>
+        </div>
+      )}
+
       {docs.length > 0 && (
         <ul className="mt-6 divide-y divide-zinc-200 dark:divide-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
           {docs.map((d, i) => (
@@ -109,7 +121,7 @@ export default function DropZone({ onDocsChange }: Props) {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium truncate">{d.filename}</p>
                 {d.summary && <p className="text-xs text-zinc-500 mt-1 line-clamp-3">{d.summary}</p>}
-                {d.error && <p className="text-xs text-red-600 mt-1">{d.error}</p>}
+                {d.error && <p className="text-sm text-red-700 dark:text-red-300 mt-1 font-mono">{d.error}</p>}
               </div>
               <StatusBadge status={d.status} />
             </li>

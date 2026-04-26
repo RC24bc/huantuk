@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import PatientAtlasShell from "@/components/PatientAtlasShell";
+import UploadCTA from "@/components/UploadCTA";
 
 export default function Home() {
   return (
@@ -62,12 +63,7 @@ function Hero() {
           >
             Try a real Malaysian case →
           </Link>
-          <a
-            href="#start"
-            className="inline-flex items-center justify-center rounded-md bg-white hover:bg-stone-100 border border-stone-300 text-stone-900 font-medium px-5 py-3 text-sm sm:text-base transition-colors"
-          >
-            Drop your own reports
-          </a>
+          <UploadCTA>Drop your own reports</UploadCTA>
         </div>
         <p className="mt-5 text-sm text-stone-500">
           Built on Claude Opus 4.7 · Open source · No login · Private to your browser.
@@ -194,12 +190,7 @@ function RealCase() {
             >
               Run uncle&apos;s case →
             </Link>
-            <a
-              href="#start"
-              className="inline-flex items-center justify-center rounded-md bg-white hover:bg-stone-100 border border-stone-300 text-stone-900 font-medium px-5 py-3 text-sm sm:text-base transition-colors"
-            >
-              Or pick a different demo
-            </a>
+            <UploadCTA>Or upload your own reports</UploadCTA>
           </div>
         </div>
         <div className="order-1 lg:order-2">
