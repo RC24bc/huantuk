@@ -166,6 +166,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(resp);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
+    // Fall back to the deterministic preset (if the case text matches a known
+    // demo preset) so the demo still works when the API key is invalid /
+    // rate-limited / network-failing. Better than a 502 dead-end.
+    const fb = buildDeterministicFallback(body);
+    if (fb.differentials.length > 0) {
+      return NextResponse.json({
+        ...fb,
+        warnings: [
+          ...(fb.warnings ?? []),
+          `Opus unavailable — using deterministic preset. (${msg})`,
+        ],
+      } satisfies SynthesiseResponse);
+    }
     return NextResponse.json(
       {
         narrative_summary: `Opus call failed: ${msg}`,
